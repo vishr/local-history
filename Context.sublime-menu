@@ -1,0 +1,5 @@
+[
+   { "caption": "-" },
+   { "caption": "Local History", "command": "local_history_menu" },
+   { "caption": "-" }
+]
