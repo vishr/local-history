@@ -7,7 +7,7 @@ from datetime import datetime as dt
 import difflib
 
 # Setup
-plugin_path = os.path.join(sublime.packages_path(), "History")
+plugin_path = os.path.join(sublime.packages_path(), "LocalHistory")
 store_path = os.path.join(plugin_path, ".store")
 history_path = os.path.join(plugin_path, ".history")
 # Create store
@@ -17,12 +17,13 @@ if not os.path.exists(store_path):
 if not os.path.exists(history_path):
     os.makedirs(history_path)
 
+
 class LocalHistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         file_path = view.file_name()
         file_name = os.path.basename(file_path)
-        new_file_name = "{0} ({1})".format(file_name, dt.now().strftime("%b %d, %Y %H:%M:%S"))
+        new_file_name = "{0} at {1}".format(file_name, dt.now().strftime("%b %d, %Y %H:%M:%S"))
         new_file_path = os.path.join(history_path, new_file_name)
 
         with open(file_path, "r") as f:
@@ -38,7 +39,7 @@ class LocalHistorySave(sublime_plugin.EventListener):
         # Dump store
         with open(store_path, "wb") as store:
             # Truncate old items
-            del history[file_path][21:]
+            del history[file_path][51:]
 
             history[file_path].insert(0, new_file_name)
             pickle.dump(history, store)
@@ -57,14 +58,14 @@ class LocalHistoryMenu(sublime_plugin.TextCommand):
 
         def on_done(index):
             # From
-            file_path = self.view.file_name()
-            from_file = os.path.basename(file_path)
-            with open(self.view.file_name(), "r") as f:
+            from_file = files[index]
+            with open(os.path.join(history_path, from_file), "r") as f:
                 from_content = f.readlines()
 
             # To
-            to_file = files[index]
-            with open(os.path.join(history_path, to_file), "r") as f:
+            file_path = self.view.file_name()
+            to_file = os.path.basename(file_path)
+            with open(file_path, "r") as f:
                 to_content = f.readlines()
 
             # Compare and show diff
