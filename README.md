@@ -2,7 +2,7 @@
 #### A Sublime Text 2 plugin for maintaining local history of files
 
 ## Installation
-Download the latest source zip from [github](https://github.com/vishr/local-history/zipball/master) and extract the files to your Sublime Text "Packages" directory, into a new directory named `LocalHistory`.
+Download the latest source zip from [github](https://github.com/vishr/local-history/zipball/master) and extract the files to your Sublime Text "Packages" directory, into a new directory named `**LocalHistory**`.
 
 The "Packages" directory location:
 
