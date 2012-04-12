@@ -16,3 +16,7 @@ The "Packages" directory location:
     `~/.Sublime Text 2/Packages/`
 * Windows:
     `%APPDATA%/Sublime Text 2/Packages/`
+
+## Caveats
+
+* Tested only on OS X
