@@ -1,4 +1,6 @@
 [{
+	"caption": "-"
+}, {
 	"caption": "Local History",
 	"children": [{
 		"caption": "Compare",
@@ -7,4 +9,6 @@
 		"caption": "Open",
 		"command": "local_history_open"
 	}]
+}, {
+	"caption": "-"
 }]
