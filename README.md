@@ -2,7 +2,7 @@
 #### A Sublime Text 2 plugin for maintaining local history of files
 
 ## Installation
-Download the latest source and extract it to > "Sublime Text 2 packages directory"/**LocalHistory**.
+Download the latest source and extract it to >"Sublime Text 2 packages directory"/**LocalHistory**.
 
 Packages directory location:
 
