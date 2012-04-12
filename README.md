@@ -6,7 +6,7 @@
 
 **With Git:** Clone the repository in your Sublime Text "Packages" directory:
 
-    http://yahoo.com
+    git clone git@github.com:vishr/local-history.git LocalHistory
 
 The "Packages" directory location:
 
