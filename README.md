@@ -17,6 +17,10 @@ The "Packages" directory location:
 * Windows:
     `%APPDATA%/Sublime Text 2/Packages/`
 
+## Usage
+Right click -> Local History -> Compare
+                             -> Open   
+
 ## Caveats
 
 * Tested only on OS X
