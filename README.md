@@ -1,3 +1,2 @@
 # Local History
-
-## Sublime Text 2 plugin for maintaining local history of files
+### Sublime Text 2 plugin for maintaining local history of files
