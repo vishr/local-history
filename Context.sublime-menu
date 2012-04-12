@@ -1,5 +1,10 @@
-[
-   { "caption": "-" },
-   { "caption": "Local History", "command": "local_history_menu" },
-   { "caption": "-" }
-]
+[{
+	"caption": "Local History",
+	"children": [{
+		"caption": "Compare",
+		"command": "local_history_compare"
+	}, {
+		"caption": "Open",
+		"command": "local_history_open"
+	}]
+}]
