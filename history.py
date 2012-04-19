@@ -8,6 +8,11 @@ import difflib
 import filecmp
 import shutil
 
+#------------#
+#   Config   #
+#------------#
+HISTORY_LIMIT = 50
+
 #-----------#
 #   Setup   #
 #-----------#
@@ -32,11 +37,11 @@ class LocalHistorySave(sublime_plugin.EventListener):
 
         # Load history map
         with open(map_path, "rb") as map:
-            history = pickle.load(map)
+            history_map = pickle.load(map)
 
         # Skip if no changes
-        if history[file_path]:
-            if filecmp.cmp(file_path, os.path.join(history_path, history[file_path][0])):
+        if history_map[file_path]:
+            if filecmp.cmp(file_path, os.path.join(history_path, history_map[file_path][0])):
                 return
 
         with open(file_path, "r") as f:
@@ -47,11 +52,14 @@ class LocalHistorySave(sublime_plugin.EventListener):
 
         # Dump history map
         with open(map_path, "wb") as map:
-            # Truncate old items
-            del history[file_path][21:]
+            history_map[file_path].insert(0, new_file_name)
+            pickle.dump(history_map, map)
 
-            history[file_path].insert(0, new_file_name)
-            pickle.dump(history, map)
+            # Remove old files
+            for file in history_map[file_path][HISTORY_LIMIT + 1:]:
+                os.remove(os.path.join(history_path, file))
+            # Remove reference from the map
+            del history_map[file_path][HISTORY_LIMIT + 1:]
 
 
 class LocalHistoryCompare(sublime_plugin.TextCommand):
@@ -59,11 +67,11 @@ class LocalHistoryCompare(sublime_plugin.TextCommand):
     def run(self, edit):
         # Fetch local history
         with open(map_path, "rb") as map:
-            history = pickle.load(map)
+            history_map = pickle.load(map)
             # Skip the first one as its always identical
-            files = history[self.view.file_name()][1:]
+            files = history_map[self.view.file_name()][1:]
             if not files:
-                sublime.status_message("No Local History")
+                sublime.status_message("No Local history_map")
                 return
 
         def on_done(index):
@@ -108,9 +116,9 @@ class LocalHistoryOpen(sublime_plugin.TextCommand):
     def run(self, edit):
         # Fetch local history
         with open(map_path, "rb") as map:
-            history = pickle.load(map)
+            history_map = pickle.load(map)
             # Skip the first one as its always identical
-            files = history[self.view.file_name()][1:]
+            files = history_map[self.view.file_name()][1:]
             if not files:
                 sublime.status_message("No Local History")
                 return
@@ -125,5 +133,5 @@ class LocalHistoryOpen(sublime_plugin.TextCommand):
         self.view.window().show_quick_panel(files, on_done)
 
 
-def clean_up():
+def delete_all():
     shutil.rmtree(".history")
