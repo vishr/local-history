@@ -24,7 +24,7 @@ map_path = os.path.join(history_path, ".map")
 # Create history directory and map
 if not os.path.exists(history_path):
     os.makedirs(history_path)
-    pickle.dump(defaultdict(list), open(map_path, "wb"))
+    pickle.dump(defaultdict(list), open(map_path, "wb"), -1)
 
 
 class LocalHistorySave(sublime_plugin.EventListener):
@@ -53,7 +53,7 @@ class LocalHistorySave(sublime_plugin.EventListener):
         # Dump history map
         with open(map_path, "wb") as map:
             history_map[file_path].insert(0, new_file_name)
-            pickle.dump(history_map, map)
+            pickle.dump(history_map, map, -1)
 
             # Remove old files
             for file in history_map[file_path][HISTORY_LIMIT + 1:]:
