@@ -24,4 +24,4 @@ The "Packages" directory location:
 
 ## Caveats
 
-* Tested only on OS X
+* Tested only on OS X and Windows
