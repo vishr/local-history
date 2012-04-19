@@ -32,7 +32,7 @@ class LocalHistorySave(sublime_plugin.EventListener):
     def on_post_save(self, view):
         file_path = view.file_name()
         file_name = os.path.basename(file_path)
-        new_file_name = "{0} {1}".format(dt.now().strftime("%b %d, %Y %H:%M:%S"), file_name)
+        new_file_name = "{0}_{1}".format(dt.now().strftime("%b-%d-%Y_%H-%M-%S"), file_name)
         new_file_path = os.path.join(history_path, new_file_name)
 
         # Load history map
@@ -128,6 +128,7 @@ class LocalHistoryOpen(sublime_plugin.TextCommand):
             if index == -1:
                 return
 
+            # Open
             self.view.window().open_file(os.path.join(history_path, files[index]))
 
         self.view.window().show_quick_panel(files, on_done)
