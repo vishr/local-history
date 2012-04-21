@@ -1,0 +1,13 @@
+[{
+    "caption": "Tools",
+    "mnemonic": "t",
+    "id": "tools",
+    "children": [{
+        "id": "local_history",
+        "caption": "Local History",
+        "children": [{
+            "caption": "Delete All",
+            "command": "history_delete_all"
+        }]
+    }]
+}]

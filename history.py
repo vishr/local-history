@@ -13,26 +13,25 @@ import shutil
 #------------#
 HISTORY_LIMIT = 50
 
-#-----------#
-#   Setup   #
-#-----------#
+
 # Paths
 plugin_path = os.path.join(sublime.packages_path(), "Local History")
 history_path = os.path.join(plugin_path, ".history")
 map_path = os.path.join(history_path, ".map")
 
-# Create history directory and map
-if not os.path.exists(history_path):
-    os.makedirs(history_path)
-    pickle.dump(defaultdict(list), open(map_path, "wb"), -1)
+def create_history_dir_map():
+    if not os.path.exists(history_path):
+        os.makedirs(history_path)
+        pickle.dump(defaultdict(list), open(map_path, "wb"), -1)
+create_history_dir_map()
 
 
-class LocalHistorySave(sublime_plugin.EventListener):
+class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         file_path = view.file_name()
         file_name = os.path.basename(file_path)
-        new_file_name = "{0}_{1}".format(dt.now().strftime("%b-%d-%Y_%H-%M-%S"), file_name)
+        new_file_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
         new_file_path = os.path.join(history_path, new_file_name)
 
         # Load history map
@@ -44,11 +43,8 @@ class LocalHistorySave(sublime_plugin.EventListener):
             if filecmp.cmp(file_path, os.path.join(history_path, history_map[file_path][0])):
                 return
 
-        with open(file_path, "r") as f:
-            content = f.read()
-
         with open(new_file_path, "w") as f:
-            f.write(content)
+            f.write(view.substr(sublime.Region(0, view.size())))
 
         # Dump history map
         with open(map_path, "wb") as map:
@@ -62,10 +58,10 @@ class LocalHistorySave(sublime_plugin.EventListener):
             del history_map[file_path][HISTORY_LIMIT + 1:]
 
 
-class LocalHistoryCompare(sublime_plugin.TextCommand):
+class HistoryCompare(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        # Fetch local history
+        # Fetch history
         with open(map_path, "rb") as map:
             history_map = pickle.load(map)
             # Skip the first one as its always identical
@@ -111,10 +107,10 @@ class LocalHistoryCompare(sublime_plugin.TextCommand):
             sublime.status_message("No Difference")
 
 
-class LocalHistoryOpen(sublime_plugin.TextCommand):
+class HistoryOpen(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        # Fetch local history
+        # Fetch history
         with open(map_path, "rb") as map:
             history_map = pickle.load(map)
             # Skip the first one as its always identical
@@ -134,5 +130,8 @@ class LocalHistoryOpen(sublime_plugin.TextCommand):
         self.view.window().show_quick_panel(files, on_done)
 
 
-def delete_all():
-    shutil.rmtree(".history")
+class HistoryDeleteAll(sublime_plugin.TextCommand):
+
+    def run(self, edit):
+        shutil.rmtree(history_path)
+        create_history_dir_map()
