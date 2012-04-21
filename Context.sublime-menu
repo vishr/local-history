@@ -4,10 +4,10 @@
 	"caption": "Local History",
 	"children": [{
 		"caption": "Compare",
-		"command": "local_history_compare"
+		"command": "history_compare"
 	}, {
 		"caption": "Open",
-		"command": "local_history_open"
+		"command": "history_open"
 	}]
 }, {
 	"caption": "-"

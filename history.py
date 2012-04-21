@@ -67,7 +67,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
             # Skip the first one as its always identical
             files = history_map[self.view.file_name()][1:]
             if not files:
-                sublime.status_message("No Local history_map")
+                sublime.status_message("No Local History")
                 return
 
         def on_done(index):
@@ -135,3 +135,4 @@ class HistoryDeleteAll(sublime_plugin.TextCommand):
     def run(self, edit):
         shutil.rmtree(history_path)
         create_history_dir_map()
+        sublime.status_message("Local History Deleted")
