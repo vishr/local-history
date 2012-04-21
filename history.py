@@ -13,7 +13,6 @@ import shutil
 #------------#
 HISTORY_LIMIT = 50
 
-
 # Paths
 plugin_path = os.path.join(sublime.packages_path(), "Local History")
 history_path = os.path.join(plugin_path, ".history")
@@ -135,4 +134,4 @@ class HistoryDeleteAll(sublime_plugin.TextCommand):
     def run(self, edit):
         shutil.rmtree(history_path)
         create_history_dir_map()
-        sublime.status_message("Local History Deleted")
+        sublime.status_message("All Local History Deleted")
