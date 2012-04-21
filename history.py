@@ -18,6 +18,7 @@ plugin_path = os.path.join(sublime.packages_path(), "Local History")
 history_path = os.path.join(plugin_path, ".history")
 map_path = os.path.join(history_path, ".map")
 
+
 def create_history_dir_map():
     if not os.path.exists(history_path):
         os.makedirs(history_path)
