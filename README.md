@@ -20,7 +20,10 @@ The "Packages" directory location:
     `%APPDATA%/Sublime Text 2/Packages/`
 
 ## Usage
-![Usage](http://i.imgur.com/Hxam1.png)
+![Compare / Open](http://i.imgur.com/MJCs3.png)
+
+![Delete All](http://i.imgur.com/nUlx8.png)
+
 
 ## Caveats
 
