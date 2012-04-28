@@ -3,11 +3,14 @@
 }, {
 	"caption": "Local History",
 	"children": [{
+		"caption": "Open",
+		"command": "history_open"
+	}, {
 		"caption": "Compare",
 		"command": "history_compare"
 	}, {
-		"caption": "Open",
-		"command": "history_open"
+		"caption": "Replace",
+		"command": "history_replace"
 	}]
 }, {
 	"caption": "-"

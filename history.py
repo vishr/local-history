@@ -58,6 +58,29 @@ class HistorySave(sublime_plugin.EventListener):
             del history_map[file_path][HISTORY_LIMIT + 1:]
 
 
+class HistoryOpen(sublime_plugin.TextCommand):
+
+    def run(self, edit):
+        # Fetch history
+        with open(map_path, "rb") as map:
+            history_map = pickle.load(map)
+            # Skip the first one as its always identical
+            files = history_map[self.view.file_name()][1:]
+            if not files:
+                sublime.status_message("No Local History")
+                return
+
+        def on_done(index):
+            # Escape
+            if index == -1:
+                return
+
+            # Open
+            self.view.window().open_file(os.path.join(history_path, files[index]))
+
+        self.view.window().show_quick_panel(files, on_done)
+
+
 class HistoryCompare(sublime_plugin.TextCommand):
 
     def run(self, edit):
@@ -107,7 +130,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
             sublime.status_message("No Difference")
 
 
-class HistoryOpen(sublime_plugin.TextCommand):
+class HistoryReplace(sublime_plugin.TextCommand):
 
     def run(self, edit):
         # Fetch history
@@ -124,8 +147,11 @@ class HistoryOpen(sublime_plugin.TextCommand):
             if index == -1:
                 return
 
-            # Open
-            self.view.window().open_file(os.path.join(history_path, files[index]))
+            # Replace
+            file = files[index]
+            with open(os.path.join(history_path, file), "r") as f:
+                self.view.replace(edit, sublime.Region(0, self.view.size()), f.read())
+            self.view.run_command("save")
 
         self.view.window().show_quick_panel(files, on_done)
 
