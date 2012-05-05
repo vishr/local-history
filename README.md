@@ -3,6 +3,7 @@
 
 ##Benefits
 
+* Every time you modify a file, a copy of the old contents is kept in the local history.
 * At any time, you can compare or replace a file with any older version from the history.
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
