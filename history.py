@@ -8,7 +8,6 @@ import difflib
 import filecmp
 import shutil
 from threading import Thread
-import time
 
 #------------#
 #   Config   #
