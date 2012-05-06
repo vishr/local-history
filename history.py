@@ -58,6 +58,7 @@ class HistorySave(sublime_plugin.EventListener):
                     os.remove(os.path.join(history_path, file))
                 # Remove reference from the map
                 del history_map[file_path][HISTORY_LIMIT + 1:]
+
         # Process in a thread
         t = Thread(target=run, args=(view.file_name(), view.substr(sublime.Region(0, view.size()))))
         t.start()
