@@ -3,7 +3,8 @@
 
 ##Benefits
 
-* At any time, you can compare a file with any older version from the history.
+* Every time you modify a file, a copy of the old contents is kept in the local history.
+* At any time, you can compare or replace a file with any older version from the history.
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
 * Each file revision is stored in a separate file inside the `.history` folder.
@@ -28,7 +29,7 @@ The "Packages" directory location:
     `%APPDATA%/Sublime Text 2/Packages/`
 
 ## Usage
-![Compare / Open](http://i.imgur.com/MJCs3.png)
+![Open / Compare / Replace](http://i.imgur.com/zlpNE.png)
 
 ![Delete All](http://i.imgur.com/nUlx8.png)
 
