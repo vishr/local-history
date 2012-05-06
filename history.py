@@ -7,6 +7,8 @@ from datetime import datetime as dt
 import difflib
 import filecmp
 import shutil
+from threading import Thread
+import time
 
 #------------#
 #   Config   #
@@ -29,33 +31,37 @@ create_history_dir_map()
 class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
-        file_path = view.file_name()
-        file_name = os.path.basename(file_path)
-        new_file_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
-        new_file_path = os.path.join(history_path, new_file_name)
 
-        # Load history map
-        with open(map_path, "rb") as map:
-            history_map = pickle.load(map)
+        def run(file_path, content):
+            file_name = os.path.basename(file_path)
+            new_file_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
+            new_file_path = os.path.join(history_path, new_file_name)
 
-        # Skip if no changes
-        if history_map[file_path]:
-            if filecmp.cmp(file_path, os.path.join(history_path, history_map[file_path][0])):
-                return
+            # Load history map
+            with open(map_path, "rb") as map:
+                history_map = pickle.load(map)
 
-        with open(new_file_path, "w") as f:
-            f.write(view.substr(sublime.Region(0, view.size())))
+            # Skip if no changes
+            if history_map[file_path]:
+                if filecmp.cmp(file_path, os.path.join(history_path, history_map[file_path][0])):
+                    return
 
-        # Dump history map
-        with open(map_path, "wb") as map:
-            history_map[file_path].insert(0, new_file_name)
-            pickle.dump(history_map, map, -1)
+            with open(new_file_path, "w") as f:
+                f.write(content)
 
-            # Remove old files
-            for file in history_map[file_path][HISTORY_LIMIT + 1:]:
-                os.remove(os.path.join(history_path, file))
-            # Remove reference from the map
-            del history_map[file_path][HISTORY_LIMIT + 1:]
+            # Dump history map
+            with open(map_path, "wb") as map:
+                history_map[file_path].insert(0, new_file_name)
+                pickle.dump(history_map, map, -1)
+
+                # Remove old files
+                for file in history_map[file_path][HISTORY_LIMIT + 1:]:
+                    os.remove(os.path.join(history_path, file))
+                # Remove reference from the map
+                del history_map[file_path][HISTORY_LIMIT + 1:]
+
+        t = Thread(target=run, args=(view.file_name(), view.substr(sublime.Region(0, view.size()))))
+        t.start()
 
 
 class HistoryOpen(sublime_plugin.TextCommand):
