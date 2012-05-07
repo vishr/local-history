@@ -31,7 +31,7 @@ class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
 
-        def run(file_path, content):
+        def run(file_path):
             file_name = os.path.basename(file_path)
             new_file_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
             new_file_path = os.path.join(history_path, new_file_name)
@@ -45,6 +45,11 @@ class HistorySave(sublime_plugin.EventListener):
                 if filecmp.cmp(file_path, os.path.join(history_path, history_map[file_path][0])):
                     return
 
+            # Get content
+            with open(file_path, "r") as f:
+                content = f.read()
+
+            # Store history
             with open(new_file_path, "w") as f:
                 f.write(content)
 
@@ -59,7 +64,8 @@ class HistorySave(sublime_plugin.EventListener):
                 # Remove reference from the map
                 del history_map[file_path][HISTORY_LIMIT + 1:]
 
-        t = Thread(target=run, args=(view.file_name(), view.substr(sublime.Region(0, view.size()))))
+        # Process in a thread
+        t = Thread(target=run, args=(view.file_name(),))
         t.start()
 
 
@@ -103,8 +109,10 @@ class HistoryCompare(sublime_plugin.TextCommand):
             if index == -1:
                 return
 
-            # Trigger save before comparing
-            self.view.run_command("save")
+            # Trigger save before comparing, if required!
+            print self.view.is_dirty()
+            if self.view.is_dirty():
+                self.view.run_command("save")
 
             # From
             from_file = files[index]
