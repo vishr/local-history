@@ -65,11 +65,7 @@ class HistorySave(sublime_plugin.EventListener):
                 del history_map[file_path][HISTORY_LIMIT + 1:]
 
         # Process in a thread
-<<<<<<< HEAD
         t = Thread(target=run, args=(view.file_name(),))
-=======
-        t = Thread(target=run, args=(view.file_name(), view.substr(sublime.Region(0, view.size()))))
->>>>>>> f255be701ee78c855c5683a043b6603d07e99b81
         t.start()
 
 
