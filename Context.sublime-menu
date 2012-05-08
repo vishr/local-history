@@ -11,6 +11,9 @@
 	}, {
 		"caption": "Replace",
 		"command": "history_replace"
+	}, {
+		"caption": "Incremental Diff",
+		"command": "history_incremental_diff"
 	}]
 }, {
 	"caption": "-"
