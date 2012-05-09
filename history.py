@@ -28,6 +28,15 @@ def create_history_dir_map():
 create_history_dir_map()
 
 
+def show_diff(window, diff):
+    panel = window.new_file()
+    panel.set_scratch(True)
+    panel.set_syntax_file("Packages/Diff/Diff.tmLanguage")
+    panel_edit = panel.begin_edit()
+    panel.insert(panel_edit, 0, diff)
+    panel.end_edit(panel_edit)
+
+
 class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
@@ -54,23 +63,10 @@ class HistorySave(sublime_plugin.EventListener):
             # Get content
             with open(file_path, "r") as f:
                 content = f.read()
-                f.seek(0)
-                to_content = f.readlines()
 
             # Store history
             with open(new_file_path, "w") as f:
                 f.write(content)
-
-            # Save a diff from previous version
-            if len(history_list) >= 1:
-                from_file = history_list[0]
-                from_file_path = os.path.join(history_path, from_file)
-                with open(from_file_path, "r") as f:
-                    from_content = f.readlines()
-                diff = difflib.unified_diff(from_content, to_content, from_file, new_file_name)
-                diff_file_path = "{0}.diff".format(from_file_path)
-                with open(diff_file_path, "w") as f:
-                    f.write("".join(diff))
 
             with open(map_path, "wb") as map:
                 # Add reference to map
@@ -150,17 +146,9 @@ class HistoryCompare(sublime_plugin.TextCommand):
 
             # Compare and show diff
             diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-            self.show_diff("".join(diff))
+            show_diff(self.view.window(), "".join(diff))
 
         self.view.window().show_quick_panel(files, on_done)
-
-    def show_diff(self, diff):
-        panel = self.view.window().new_file()
-        panel.set_scratch(True)
-        panel.set_syntax_file("Packages/Diff/Diff.tmLanguage")
-        panel_edit = panel.begin_edit()
-        panel.insert(panel_edit, 0, diff)
-        panel.end_edit(panel_edit)
 
 
 class HistoryReplace(sublime_plugin.TextCommand):
@@ -200,21 +188,27 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
             if len(history_list) < 2:
                 sublime.status_message("No Incremental Diff Found")
                 return
-            diff_files = ["{0}.diff".format(file) for file in history_list[1:]]
+            files = history_list[:-1]
 
         def on_done(index):
             # Escape
             if index == -1:
                 return
 
-            # Open
-            view = self.view.window().open_file(os.path.join(history_path, diff_files[index]), sublime.TRANSIENT)
-            view.set_read_only(True)
+            if len(history_list) >= 1:
+                from_file = history_list[index + 1]
+                from_file_path = os.path.join(history_path, from_file)
+                with open(from_file_path, "r") as f:
+                    from_content = f.readlines()
 
-        self.view.window().show_quick_panel(diff_files, on_done)
-        # diff_file = "{0}.diff".format(history_list[self.index])
-        # diff_file_path = os.path.join(history_path, diff_file)
-        # self.view.window().open_file(diff_file_path, sublime.TRANSIENT)
+                to_file = history_list[index]
+                to_file_path = os.path.join(history_path, to_file)
+                with open(to_file_path, "r") as f:
+                    to_content = f.readlines()
+                diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
+                show_diff(self.view.window(), "".join(diff))
+
+        self.view.window().show_quick_panel(files, on_done)
 
 
 class HistoryDeleteAll(sublime_plugin.TextCommand):
