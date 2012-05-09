@@ -5,10 +5,11 @@
 
 * Every time you modify a file, a copy of the old contents is kept in the local history.
 * At any time, you can compare or replace a file with any older version from the history.
+* View incremental diffs of any file form history.
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
 * Each file revision is stored in a separate file inside the `.history` folder.
-e.g., `~/Library/Application Support/Sublime Text 2/Packages/Local History/.history/Apr.23.2012.10.10.34.history.py`
+e.g., `~/Library/Application Support/Sublime Text 2/.history/Apr.23.2012.10.10.34.history.py`
 
 ## Installation
 **With the Package Control plugin:** The easiest way to install this plugin is through [Package Control](http://wbond.net/sublime_packages/package_control)
@@ -29,7 +30,7 @@ The "Packages" directory location:
     `%APPDATA%/Sublime Text 2/Packages/`
 
 ## Usage
-![Open / Compare / Replace](http://i.imgur.com/zlpNE.png)
+![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/qeoGl.png)
 
 ![Delete All](http://i.imgur.com/nUlx8.png)
 
