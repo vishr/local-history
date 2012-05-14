@@ -13,7 +13,7 @@ from threading import Thread
 #   Config   #
 #------------#
 HISTORY_LIMIT = 50
-FILE_SIZE_LIMIT = 256000  # bytes
+FILE_SIZE_LIMIT = 262144  # 245 KB
 
 # Paths
 st2_path = os.path.dirname(sublime.packages_path())
@@ -42,8 +42,9 @@ class HistorySave(sublime_plugin.EventListener):
     def on_post_save(self, view):
 
         def run(file_path):
-            # Not saving
+            # Return if file exceeds the limit
             if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
+                print "WARNING: Local History did not save a copy of this file because it has exceeded {0}KB.".format(FILE_SIZE_LIMIT / 1024)
                 return
 
             file_name = os.path.basename(file_path)
