@@ -13,7 +13,7 @@ from threading import Thread
 #   Config   #
 #------------#
 HISTORY_LIMIT = 50
-FILE_SIZE_LIMIT = 262144  # 245 KB
+FILE_SIZE_LIMIT = 262144  # 256 KB
 
 # Paths
 st2_path = os.path.dirname(sublime.packages_path())
