@@ -38,3 +38,4 @@ The "Packages" directory location:
 ## Caveats
 
 * Tested only on OS X and Windows
+* As this plugin is continuously evolving, please delete the history and reinstall the plugin incase you face any problems.
