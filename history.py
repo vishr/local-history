@@ -13,7 +13,7 @@ from threading import Thread
 #   Config   #
 #------------#
 HISTORY_LIMIT = 50
-FILE_SIZE_LIMIT = 262144  # 245 KB
+FILE_SIZE_LIMIT = 262144  # 256 KB
 
 # Paths
 st2_path = os.path.dirname(sublime.packages_path())
@@ -48,8 +48,11 @@ class HistorySave(sublime_plugin.EventListener):
                 return
 
             file_name = os.path.basename(file_path)
-            new_file_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
-            new_file_path = os.path.join(history_path, new_file_name)
+            file_dir = os.path.dirname(file_path)
+            file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
+            newfile_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
+            newfile_dir = os.path.join(history_path, file_dir)
+            newfile_path = os.path.join(newfile_dir, newfile_name)
 
             # Load history map
             with open(map_path, "rb") as map:
@@ -58,20 +61,17 @@ class HistorySave(sublime_plugin.EventListener):
 
             # Skip if no changes
             if history_list:
-                if filecmp.cmp(file_path, os.path.join(history_path, history_list[0])):
+                if filecmp.cmp(file_path, os.path.join(newfile_dir, history_list[0])):
                     return
 
-            # Get content
-            with open(file_path, "r") as f:
-                content = f.read()
-
             # Store history
-            with open(new_file_path, "w") as f:
-                f.write(content)
+            if not os.path.exists(newfile_dir):
+                os.makedirs(newfile_dir)  # Create directory structure
+            shutil.copyfile(file_path, newfile_path)
 
             with open(map_path, "wb") as map:
                 # Add reference to map
-                history_list.insert(0, new_file_name)
+                history_list.insert(0, newfile_name)
 
                 # Remove old files
                 for file in history_list[HISTORY_LIMIT + 1:]:
@@ -84,7 +84,7 @@ class HistorySave(sublime_plugin.EventListener):
 
         # Process in a thread
         t = Thread(target=run, args=(view.file_name(),))
-        t.start()
+        t.start()  # test
 
 
 class HistoryOpen(sublime_plugin.TextCommand):
