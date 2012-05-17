@@ -37,6 +37,12 @@ def show_diff(window, diff):
     panel.end_edit(panel_edit)
 
 
+def get_filedir(file_path):
+    file_dir = os.path.dirname(file_path)
+    file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
+    return os.path.join(history_path, file_dir)
+
+
 class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
@@ -48,10 +54,8 @@ class HistorySave(sublime_plugin.EventListener):
                 return
 
             file_name = os.path.basename(file_path)
-            file_dir = os.path.dirname(file_path)
-            file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
             newfile_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
-            newfile_dir = os.path.join(history_path, file_dir)
+            newfile_dir = get_filedir(file_path)
             newfile_path = os.path.join(newfile_dir, newfile_name)
 
             # Load history map
@@ -74,8 +78,9 @@ class HistorySave(sublime_plugin.EventListener):
                 history_list.insert(0, newfile_name)
 
                 # Remove old files
+                file_dir = get_filedir(self.view.file_name())
                 for file in history_list[HISTORY_LIMIT + 1:]:
-                    os.remove(os.path.join(history_path, file))
+                    os.remove(os.path.join(file_dir, file))
                 # Remove reference from map
                 del history_list[HISTORY_LIMIT + 1:]
 
@@ -106,7 +111,8 @@ class HistoryOpen(sublime_plugin.TextCommand):
                 return
 
             # Open
-            self.view.window().open_file(os.path.join(history_path, files[index]))
+            file_dir = get_filedir(self.view.file_name())
+            self.view.window().open_file(os.path.join(file_dir, files[index]))
 
         self.view.window().show_quick_panel(files, on_done)
 
@@ -135,7 +141,8 @@ class HistoryCompare(sublime_plugin.TextCommand):
 
             # From
             from_file = files[index]
-            from_file_path = os.path.join(history_path, from_file)
+            file_dir = get_filedir(self.view.file_name())
+            from_file_path = os.path.join(file_dir, from_file)
             with open(from_file_path, "r") as f:
                 from_content = f.readlines()
 
@@ -172,7 +179,8 @@ class HistoryReplace(sublime_plugin.TextCommand):
 
             # Replace
             file = files[index]
-            file_path = os.path.join(history_path, file)
+            file_dir = get_filedir(self.view.file_name())
+            file_path = os.path.join(file_dir, file)
             with open(file_path, "r") as f:
                 self.view.replace(edit, sublime.Region(0, self.view.size()), f.read())
             self.view.run_command("save")
@@ -198,12 +206,14 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
 
             if len(history_list) >= 1:
                 from_file = history_list[index + 1]
-                from_file_path = os.path.join(history_path, from_file)
+                file_dir = get_filedir(self.view.file_name())
+                from_file_path = os.path.join(file_dir, from_file)
                 with open(from_file_path, "r") as f:
                     from_content = f.readlines()
 
                 to_file = history_list[index]
-                to_file_path = os.path.join(history_path, to_file)
+                file_dir = get_filedir(self.view.file_name())
+                to_file_path = os.path.join(file_dir, to_file)
                 with open(to_file_path, "r") as f:
                     to_content = f.readlines()
                 diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
