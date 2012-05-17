@@ -78,9 +78,8 @@ class HistorySave(sublime_plugin.EventListener):
                 history_list.insert(0, newfile_name)
 
                 # Remove old files
-                file_dir = get_filedir(self.view.file_name())
                 for file in history_list[HISTORY_LIMIT + 1:]:
-                    os.remove(os.path.join(file_dir, file))
+                    os.remove(os.path.join(newfile_dir, file))
                 # Remove reference from map
                 del history_list[HISTORY_LIMIT + 1:]
 
