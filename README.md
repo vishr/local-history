@@ -9,7 +9,7 @@
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
 * Each file revision is stored in a separate file inside the `.history` folder.
-e.g., `~/Library/Application Support/Sublime Text 2/.history/foo/bar/Apr.23.2012.10.10.34.history.py`
+e.g., `/Users/vrana/.sublime/history/foo/bar/hello.23.2012.10.10.34.history.py`
 
 ## Installation
 **With the Package Control plugin:** The easiest way to install this plugin is through [Package Control](http://wbond.net/sublime_packages/package_control)
