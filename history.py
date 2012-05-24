@@ -14,7 +14,6 @@ from threading import Thread
 #------------#
 HISTORY_LIMIT = 50
 FILE_SIZE_LIMIT = 262144  # 256 KB
-os.path.expanduser("~")
 
 # Paths
 history_path = os.path.join(os.path.expanduser("~"), ".sublime", "history")
