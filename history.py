@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import os
+import platform
 from collections import defaultdict
 import cPickle as pickle
 from datetime import datetime as dt
@@ -38,7 +39,10 @@ def show_diff(window, diff):
 
 def get_filedir(file_path):
     file_dir = os.path.dirname(file_path)
-    file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
+    if platform.system() == "Windows":
+        file_dir = file_dir.replace(":", "", 1)
+    else:
+        file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
     return os.path.join(history_path, file_dir)
 
 
