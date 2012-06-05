@@ -40,8 +40,8 @@ def show_diff(window, diff):
 def get_filedir(file_path):
     file_dir = os.path.dirname(file_path)
     if platform.system() == "Windows":
-        if file_dir.find("\\\\") == 0:
-            file_dir = file_dir[2:] # strip the network \\ starting path
+        if file_dir.find("\\") == 0:
+            file_dir = file_dir.replace("\\", "", 1)  # Strip the network \\ starting path
         if file_dir.find(":") == 1:
             file_dir = file_dir.replace(":", "", 1)
     else:
