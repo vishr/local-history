@@ -32,6 +32,9 @@ The "Packages" directory location:
 ## Usage
 ![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/qeoGl.png)
 
+Keyboard Shortcut
+![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/WNrbJ)
+
 ![Delete All](http://i.imgur.com/nUlx8.png)
 
 
