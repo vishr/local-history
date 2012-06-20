@@ -30,7 +30,10 @@ The "Packages" directory location:
     `%APPDATA%/Sublime Text 2/Packages/`
 
 ## Usage
+
 ![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/qeoGl.png)
+
+![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/ADMgy.png)
 
 ![Delete All](http://i.imgur.com/nUlx8.png)
 
