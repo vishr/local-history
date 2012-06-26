@@ -84,10 +84,10 @@ class HistorySave(sublime_plugin.EventListener):
                 history_list.insert(0, newfile_name)
 
                 # Remove old files
-                for file in history_list[HISTORY_LIMIT + 1:]:
+                for file in history_list[HISTORY_LIMIT:]:
                     os.remove(os.path.join(newfile_dir, file))
                 # Remove reference from map
-                del history_list[HISTORY_LIMIT + 1:]
+                del history_list[HISTORY_LIMIT:]
 
                 # Dump history map
                 pickle.dump(history_map, map, -1)
