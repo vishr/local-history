@@ -79,16 +79,17 @@ class HistorySave(sublime_plugin.EventListener):
                 os.makedirs(newfile_dir)  # Create directory structure
             shutil.copyfile(file_path, newfile_path)
 
+            # Add reference to map
+            history_list.insert(0, newfile_name)
+
+            # Remove old files
+            for file in history_list[HISTORY_LIMIT:]:
+                os.remove(os.path.join(newfile_dir, file))
+
+            # Remove old references from map
+            del history_list[HISTORY_LIMIT:]
+
             with open(map_path, "wb") as map:
-                # Add reference to map
-                history_list.insert(0, newfile_name)
-
-                # Remove old files
-                for file in history_list[HISTORY_LIMIT:]:
-                    os.remove(os.path.join(newfile_dir, file))
-                # Remove reference from map
-                del history_list[HISTORY_LIMIT:]
-
                 # Dump history map
                 pickle.dump(history_map, map, -1)
 
