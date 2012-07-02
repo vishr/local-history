@@ -160,8 +160,8 @@ class HistoryCompare(sublime_plugin.TextCommand):
 
             # Compare and show diff
             diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-            diff = [l.decode('utf8') for l in diff]
-            show_diff(self.view.window(), u"".join(diff))
+            diff = [d.decode("utf8") for d in diff]
+            show_diff(self.view.window(), "".join(diff))
 
         self.view.window().show_quick_panel(files, on_done)
 
@@ -224,6 +224,7 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
                 with open(to_file_path, "r") as f:
                     to_content = f.readlines()
                 diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
+                diff = [d.decode("utf8") for d in diff]
                 show_diff(self.view.window(), "".join(diff))
 
         self.view.window().show_quick_panel(files, on_done)
