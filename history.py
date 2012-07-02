@@ -160,7 +160,8 @@ class HistoryCompare(sublime_plugin.TextCommand):
 
             # Compare and show diff
             diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-            show_diff(self.view.window(), "".join(diff))
+            diff = [l.decode('utf8') for l in diff]
+            show_diff(self.view.window(), u"".join(diff))
 
         self.view.window().show_quick_panel(files, on_done)
 
