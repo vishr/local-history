@@ -8,7 +8,7 @@
 * View incremental diff of any file form history.
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
-* Each file revision is stored in a separate file inside the `history` folder.
+* Each file revision is stored in a separate file inside the `history` folder of your home directory.
 e.g., `/Users/vrana/.sublime/history/foo/bar/hello.23.2012.10.10.34.history.py`
 
 ## Installation
