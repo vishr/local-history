@@ -95,7 +95,7 @@ class HistorySave(sublime_plugin.EventListener):
 
         # Process in a thread
         t = Thread(target=run, args=(view.file_name(),))
-        t.start()  # test
+        t.start()
 
 
 class HistoryOpen(sublime_plugin.TextCommand):
