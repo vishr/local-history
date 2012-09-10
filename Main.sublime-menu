@@ -10,4 +10,29 @@
             "command": "history_delete_all"
         }]
     }]
+}, {
+    "caption": "Preferences",
+    "mnemonic": "n",
+    "id": "preferences",
+    "children": [{
+        "caption": "Package Settings",
+        "mnemonic": "P",
+        "id": "package-settings",
+        "children": [{
+            "caption": "Local History",
+            "children": [{
+                "command": "open_file",
+                "args": {
+                    "file": "${packages}/Local History/LocalHistory.sublime-settings"
+                },
+                "caption": "Settings – Default"
+            }, {
+                "command": "open_file",
+                "args": {
+                    "file": "${packages}/User/LocalHistory.sublime-settings"
+                },
+                "caption": "Settings – User"
+            }]
+        }]
+    }]
 }]
