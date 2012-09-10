@@ -10,21 +10,23 @@ import filecmp
 import shutil
 from threading import Thread
 
-#------------#
-#   Config   #
-#------------#
-HISTORY_LIMIT = 50
-FILE_SIZE_LIMIT = 262144  # 256 KiB
-
-# Paths
-history_path = os.path.join(os.path.expanduser("~"), ".sublime", "history")
-map_path = os.path.join(history_path, ".map")
+#--------------#
+#   Settings   #
+#--------------#
+settings = sublime.load_settings("LocalHistory.sublime-settings")
+history_location = settings.get("history_location", "~")
+if history_location == "~":
+    history_location = os.path.expanduser("~")
+HISTORY_PATH = os.path.join(history_location, ".sublime", "history")
+MAP_PATH = os.path.join(HISTORY_PATH, ".map")
+HISTORY_LIMIT = settings.get("history_limit", 50)
+FILE_SIZE_LIMIT = settings.get("file_size_limit", 262144)
 
 
 def create_history_dir_map():
-    if not os.path.exists(history_path):
-        os.makedirs(history_path)
-        pickle.dump(defaultdict(list), open(map_path, "wb"), -1)
+    if not os.path.exists(HISTORY_PATH):
+        os.makedirs(HISTORY_PATH)
+        pickle.dump(defaultdict(list), open(MAP_PATH, "wb"), -1)
 create_history_dir_map()
 
 
@@ -46,7 +48,7 @@ def get_filedir(file_path):
             file_dir = file_dir.replace(":", "", 1)
     else:
         file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
-    return os.path.join(history_path, file_dir)
+    return os.path.join(HISTORY_PATH, file_dir)
 
 
 class HistorySave(sublime_plugin.EventListener):
@@ -65,7 +67,7 @@ class HistorySave(sublime_plugin.EventListener):
             newfile_path = os.path.join(newfile_dir, newfile_name)
 
             # Load history map
-            with open(map_path, "rb") as map:
+            with open(MAP_PATH, "rb") as map:
                 history_map = pickle.load(map)
                 history_list = history_map[file_path]
 
@@ -89,7 +91,7 @@ class HistorySave(sublime_plugin.EventListener):
             # Remove old references from map
             del history_list[HISTORY_LIMIT:]
 
-            with open(map_path, "wb") as map:
+            with open(MAP_PATH, "wb") as map:
                 # Dump history map
                 pickle.dump(history_map, map, -1)
 
@@ -102,7 +104,7 @@ class HistoryOpen(sublime_plugin.TextCommand):
 
     def run(self, edit):
         # Fetch history
-        with open(map_path, "rb") as map:
+        with open(MAP_PATH, "rb") as map:
             history_map = pickle.load(map)
             history_list = history_map[self.view.file_name()]
             # Skip the first one as its always identical
@@ -127,7 +129,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
 
     def run(self, edit):
         # Fetch history
-        with open(map_path, "rb") as map:
+        with open(MAP_PATH, "rb") as map:
             history_map = pickle.load(map)
             history_list = history_map[self.view.file_name()]
             # Skip the first one as its always identical
@@ -170,7 +172,7 @@ class HistoryReplace(sublime_plugin.TextCommand):
 
     def run(self, edit):
         # Fetch history
-        with open(map_path, "rb") as map:
+        with open(MAP_PATH, "rb") as map:
             history_map = pickle.load(map)
             history_list = history_map[self.view.file_name()]
             # Skip the first one as its always identical
@@ -198,7 +200,7 @@ class HistoryReplace(sublime_plugin.TextCommand):
 class HistoryIncrementalDiff(sublime_plugin.TextCommand):
 
     def run(self, edit, **kwargs):
-        with open(map_path, "rb") as map:
+        with open(MAP_PATH, "rb") as map:
             history_map = pickle.load(map)
             history_list = history_map[self.view.file_name()]
             if len(history_list) < 2:
@@ -233,6 +235,6 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
 class HistoryDeleteAll(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        shutil.rmtree(history_path)
+        shutil.rmtree(HISTORY_PATH)
         create_history_dir_map()
         sublime.status_message("All Local History Deleted")
