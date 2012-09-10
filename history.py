@@ -17,7 +17,7 @@ settings = sublime.load_settings("LocalHistory.sublime-settings")
 history_location = settings.get("history_location", "~")
 if history_location == "~":
     history_location = os.path.expanduser("~")
-HISTORY_PATH = os.path.join(history_location, ".sublime", "history")
+HISTORY_PATH = os.path.join(os.path.abspath(history_location), ".sublime", "history")
 MAP_PATH = os.path.join(HISTORY_PATH, ".map")
 HISTORY_LIMIT = settings.get("history_limit", 50)
 FILE_SIZE_LIMIT = settings.get("file_size_limit", 262144)
