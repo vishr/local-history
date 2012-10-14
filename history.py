@@ -1,9 +1,8 @@
 import sublime
 import sublime_plugin
 import os
+import glob
 import platform
-from collections import defaultdict
-import cPickle as pickle
 from datetime import datetime as dt
 import difflib
 import filecmp
@@ -18,16 +17,8 @@ history_location = settings.get("history_location", "~")
 if history_location == "~":
     history_location = os.path.expanduser("~")
 HISTORY_PATH = os.path.join(os.path.abspath(history_location), ".sublime", "history")
-MAP_PATH = os.path.join(HISTORY_PATH, ".map")
 HISTORY_LIMIT = settings.get("history_limit", 50)
 FILE_SIZE_LIMIT = settings.get("file_size_limit", 262144)
-
-
-def create_history_dir_map():
-    if not os.path.exists(HISTORY_PATH):
-        os.makedirs(HISTORY_PATH)
-        pickle.dump(defaultdict(list), open(MAP_PATH, "wb"), -1)
-create_history_dir_map()
 
 
 def show_diff(window, diff):
@@ -56,44 +47,34 @@ class HistorySave(sublime_plugin.EventListener):
     def on_post_save(self, view):
 
         def run(file_path):
-            # Return if file exceeds the limit
+            # Return if file exceeds the size limit
             if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
-                print "WARNING: Local History did not save a copy of this file because it has exceeded {0}KB.".format(FILE_SIZE_LIMIT / 1024)
+                print "WARNING: Local History did not save a copy of this file because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024)
                 return
 
+            # Get history directory
             file_name = os.path.basename(file_path)
-            newfile_name = "{0}.{1}".format(dt.now().strftime("%b.%d.%Y.%H.%M.%S"), file_name)
-            newfile_dir = get_filedir(file_path)
-            newfile_path = os.path.join(newfile_dir, newfile_name)
+            history_dir = get_filedir(file_path)
+            if not os.path.exists(history_dir):
+                # Create directory structure
+                os.makedirs(history_dir)
 
-            # Load history map
-            with open(MAP_PATH, "rb") as map:
-                history_map = pickle.load(map)
-                history_list = history_map[file_path]
+            # Get history files
+            os.chdir(history_dir)
+            history_files = glob.glob("*" + file_name)
+            history_files.reverse()
 
             # Skip if no changes
-            if history_list:
-                if filecmp.cmp(file_path, os.path.join(newfile_dir, history_list[0])):
+            if history_files:
+                if filecmp.cmp(file_path, os.path.join(history_dir, history_files[0])):
                     return
 
             # Store history
-            if not os.path.exists(newfile_dir):
-                os.makedirs(newfile_dir)  # Create directory structure
-            shutil.copyfile(file_path, newfile_path)
-
-            # Add reference to map
-            history_list.insert(0, newfile_name)
+            shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".format(dt.now().strftime("%b.%d.%Y_%H.%M.%S"), file_name)))
 
             # Remove old files
-            for file in history_list[HISTORY_LIMIT:]:
-                os.remove(os.path.join(newfile_dir, file))
-
-            # Remove old references from map
-            del history_list[HISTORY_LIMIT:]
-
-            with open(MAP_PATH, "wb") as map:
-                # Dump history map
-                pickle.dump(history_map, map, -1)
+            for file in history_files[HISTORY_LIMIT - 1:]:  # -1 as we just added a new file
+                os.remove(file)
 
         # Process in a thread
         t = Thread(target=run, args=(view.file_name(),))
@@ -103,15 +84,17 @@ class HistorySave(sublime_plugin.EventListener):
 class HistoryOpen(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        # Fetch history
-        with open(MAP_PATH, "rb") as map:
-            history_map = pickle.load(map)
-            history_list = history_map[self.view.file_name()]
-            # Skip the first one as its always identical
-            files = history_list[1:]
-            if not files:
-                sublime.status_message("No Local History Found")
-                return
+        # Get history directory
+        file_name = os.path.basename(self.view.file_name())
+        history_dir = get_filedir(self.view.file_name())
+
+        # Get history files
+        os.chdir(history_dir)
+        history_files = glob.glob("*" + file_name)
+        history_files.reverse()
+        if not history_files:
+            sublime.status_message("No Local History Found")
+            return
 
         def on_done(index):
             # Escape
@@ -119,24 +102,28 @@ class HistoryOpen(sublime_plugin.TextCommand):
                 return
 
             # Open
-            file_dir = get_filedir(self.view.file_name())
-            self.view.window().open_file(os.path.join(file_dir, files[index]))
+            self.view.window().open_file(os.path.join(history_dir, history_files[index]))
 
-        self.view.window().show_quick_panel(files, on_done)
+        self.view.window().show_quick_panel(history_files, on_done)
 
 
 class HistoryCompare(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        # Fetch history
-        with open(MAP_PATH, "rb") as map:
-            history_map = pickle.load(map)
-            history_list = history_map[self.view.file_name()]
-            # Skip the first one as its always identical
-            files = history_list[1:]
-            if not files:
-                sublime.status_message("No Local History Found")
-                return
+        # Get history directory
+        file_name = os.path.basename(self.view.file_name())
+        history_dir = get_filedir(self.view.file_name())
+
+        # Get history files
+        os.chdir(history_dir)
+        history_files = glob.glob("*" + file_name)
+        history_files.reverse()
+        # Skip the first one as its always identical
+        history_files = history_files[1:]
+
+        if not history_files:
+            sublime.status_message("No Local History Found")
+            return
 
         def on_done(index):
             # Escape
@@ -148,16 +135,13 @@ class HistoryCompare(sublime_plugin.TextCommand):
                 self.view.run_command("save")
 
             # From
-            from_file = files[index]
-            file_dir = get_filedir(self.view.file_name())
-            from_file_path = os.path.join(file_dir, from_file)
-            with open(from_file_path, "r") as f:
+            from_file = history_files[index]
+            with open(from_file, "r") as f:
                 from_content = f.readlines()
 
             # To
-            file_path = self.view.file_name()
-            to_file = os.path.basename(file_path)
-            with open(file_path, "r") as f:
+            to_file = self.view.file_name()
+            with open(to_file, "r") as f:
                 to_content = f.readlines()
 
             # Compare and show diff
@@ -165,21 +149,26 @@ class HistoryCompare(sublime_plugin.TextCommand):
             diff = [d.decode("utf8") for d in diff]
             show_diff(self.view.window(), "".join(diff))
 
-        self.view.window().show_quick_panel(files, on_done)
+        self.view.window().show_quick_panel(history_files, on_done)
 
 
 class HistoryReplace(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        # Fetch history
-        with open(MAP_PATH, "rb") as map:
-            history_map = pickle.load(map)
-            history_list = history_map[self.view.file_name()]
-            # Skip the first one as its always identical
-            files = history_list[1:]
-            if not files:
-                sublime.status_message("No Local History Found")
-                return
+        # Get history directory
+        file_name = os.path.basename(self.view.file_name())
+        history_dir = get_filedir(self.view.file_name())
+
+        # Get history files
+        os.chdir(history_dir)
+        history_files = glob.glob("*" + file_name)
+        history_files.reverse()
+        # Skip the first one as its always identical
+        history_files = history_files[1:]
+
+        if not history_files:
+            sublime.status_message("No Local History Found")
+            return
 
         def on_done(index):
             # Escape
@@ -187,54 +176,59 @@ class HistoryReplace(sublime_plugin.TextCommand):
                 return
 
             # Replace
-            file = files[index]
-            file_dir = get_filedir(self.view.file_name())
-            file_path = os.path.join(file_dir, file)
-            with open(file_path, "r") as f:
+            file = history_files[index]
+            with open(file) as f:
                 self.view.replace(edit, sublime.Region(0, self.view.size()), f.read())
             self.view.run_command("save")
 
-        self.view.window().show_quick_panel(files, on_done)
+        self.view.window().show_quick_panel(history_files, on_done)
 
 
 class HistoryIncrementalDiff(sublime_plugin.TextCommand):
 
     def run(self, edit, **kwargs):
-        with open(MAP_PATH, "rb") as map:
-            history_map = pickle.load(map)
-            history_list = history_map[self.view.file_name()]
-            if len(history_list) < 2:
-                sublime.status_message("No Incremental Diff Found")
-                return
-            files = history_list[:-1]
+        # Get history directory
+        file_name = os.path.basename(self.view.file_name())
+        history_dir = get_filedir(self.view.file_name())
+
+        # Get history files
+        os.chdir(history_dir)
+        history_files = glob.glob("*" + file_name)
+        history_files.reverse()
+        if len(history_files) < 2:
+            sublime.status_message("No Incremental Diff Found")
+            return
 
         def on_done(index):
             # Escape
             if index == -1:
                 return
 
-            if len(history_list) >= 1:
-                from_file = history_list[index + 1]
-                file_dir = get_filedir(self.view.file_name())
-                from_file_path = os.path.join(file_dir, from_file)
-                with open(from_file_path, "r") as f:
-                    from_content = f.readlines()
+            # Selected the last file
+            if index == len(history_files) - 1:
+                sublime.status_message("No Incremental Diff Found")
+                return
 
-                to_file = history_list[index]
-                file_dir = get_filedir(self.view.file_name())
-                to_file_path = os.path.join(file_dir, to_file)
-                with open(to_file_path, "r") as f:
-                    to_content = f.readlines()
-                diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-                diff = [d.decode("utf8") for d in diff]
-                show_diff(self.view.window(), "".join(diff))
+            # From
+            from_file = history_files[index + 1]
+            with open(from_file) as f:
+                from_content = f.readlines()
 
-        self.view.window().show_quick_panel(files, on_done)
+            # To
+            to_file = history_files[index]
+            with open(to_file) as f:
+                to_content = f.readlines()
+
+            # Compare and show diff
+            diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
+            diff = [d.decode("utf8") for d in diff]
+            show_diff(self.view.window(), "".join(diff))
+
+        self.view.window().show_quick_panel(history_files, on_done)
 
 
 class HistoryDeleteAll(sublime_plugin.TextCommand):
 
     def run(self, edit):
         shutil.rmtree(HISTORY_PATH)
-        create_history_dir_map()
         sublime.status_message("All Local History Deleted")
