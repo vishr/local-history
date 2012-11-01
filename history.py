@@ -62,7 +62,7 @@ class HistorySave(sublime_plugin.EventListener):
             # Get history files
             os.chdir(history_dir)
             history_files = glob.glob("*" + file_name)
-            history_files.reverse()
+            history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
 
             # Skip if no changes
             if history_files:
@@ -91,7 +91,7 @@ class HistoryOpen(sublime_plugin.TextCommand):
         # Get history files
         os.chdir(history_dir)
         history_files = glob.glob("*" + file_name)
-        history_files.reverse()
+        history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         if not history_files:
             sublime.status_message("No Local History Found")
             return
@@ -117,7 +117,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
         # Get history files
         os.chdir(history_dir)
         history_files = glob.glob("*" + file_name)
-        history_files.reverse()
+        history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         # Skip the first one as its always identical
         history_files = history_files[1:]
 
@@ -162,7 +162,7 @@ class HistoryReplace(sublime_plugin.TextCommand):
         # Get history files
         os.chdir(history_dir)
         history_files = glob.glob("*" + file_name)
-        history_files.reverse()
+        history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         # Skip the first one as its always identical
         history_files = history_files[1:]
 
@@ -194,7 +194,7 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
         # Get history files
         os.chdir(history_dir)
         history_files = glob.glob("*" + file_name)
-        history_files.reverse()
+        history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         if len(history_files) < 2:
             sublime.status_message("No Incremental Diff Found")
             return
