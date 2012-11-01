@@ -8,8 +8,8 @@
 * View incremental diff of any file from the history.
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
-* Each file revision is stored in a separate file inside the `.sublime/history` folder of your home directory.
-e.g., `/Users/vrana/.sublime/history/foo/bar/hello.23.2012.10.10.34.history.py`
+* Each file revision is stored in a separate file (with full path) inside the `.sublime/history` folder of your home directory.
+e.g., `/Users/vrana/.sublime/history/foo/bar/Oct.14.2012_14.48.47.history.py`
 
 ## Installation
 **With the Package Control plugin:** The easiest way to install this plugin is through [Package Control](http://wbond.net/sublime_packages/package_control)
