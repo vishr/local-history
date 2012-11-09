@@ -9,9 +9,9 @@ import filecmp
 import shutil
 from threading import Thread
 
-#--------------#
+#==============#
 #   Settings   #
-#--------------#
+#==============#
 settings = sublime.load_settings("LocalHistory.sublime-settings")
 history_location = settings.get("history_location", "~")
 if history_location == "~":
