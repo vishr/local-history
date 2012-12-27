@@ -32,9 +32,9 @@ The "Packages" directory location:
 ## Usage
 ![Settings](http://i.imgur.com/vD3QT.png)
 
-![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/qeoGl.png)
+![Open | Compare | Replace | Incremental Diff](http://i.imgur.com/qeoGl.png)
 
-![Open / Compare / Replace / Incremental Diff](http://i.imgur.com/ADMgy.png)
+![Open | Compare | Replace | Incremental Diff](http://i.imgur.com/ADMgy.png)
 
 ![Delete All](http://i.imgur.com/nUlx8.png)
 
