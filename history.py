@@ -21,7 +21,20 @@ HISTORY_LIMIT = settings.get("history_limit", 50)
 FILE_SIZE_LIMIT = settings.get("file_size_limit", 262144)
 
 
-def show_diff(window, diff):
+def show_diff(window, from_file, to_file):
+    # From
+    # from_file = from_file.decode("utf-8")
+    with open(from_file, "r") as f:
+        from_content = f.readlines()
+
+    # To
+    # to_file = to_file.decode("utf-8")
+    with open(to_file, "r") as f:
+        to_content = f.readlines()
+
+    # Compare and show diff
+    diff = difflib.unified_diff(from_content, to_content, "from_file", "to_file")
+    diff = "".join([d.decode("utf-8") for d in diff])
     panel = window.new_file()
     panel.set_scratch(True)
     panel.set_syntax_file("Packages/Diff/Diff.tmLanguage")
@@ -47,6 +60,7 @@ class HistorySave(sublime_plugin.EventListener):
     def on_post_save(self, view):
 
         def run(file_path):
+            file_path = file_path.encode("utf-8")
             # Return if file exceeds the size limit
             if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
                 print "WARNING: Local History did not save a copy of this file \
@@ -136,20 +150,10 @@ class HistoryCompare(sublime_plugin.TextCommand):
             if self.view.is_dirty():
                 self.view.run_command("save")
 
-            # From
+            # Show diff
             from_file = history_files[index]
-            with open(from_file, "r") as f:
-                from_content = f.readlines()
-
-            # To
             to_file = self.view.file_name()
-            with open(to_file, "r") as f:
-                to_content = f.readlines()
-
-            # Compare and show diff
-            diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-            diff = [d.decode("utf8") for d in diff]
-            show_diff(self.view.window(), "".join(diff))
+            show_diff(self.view.window(), from_file, to_file)
 
         self.view.window().show_quick_panel(history_files, on_done)
 
@@ -211,20 +215,10 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
                 sublime.status_message("No Incremental Diff Found")
                 return
 
-            # From
+            # Show diff
             from_file = history_files[index + 1]
-            with open(from_file) as f:
-                from_content = f.readlines()
-
-            # To
             to_file = history_files[index]
-            with open(to_file) as f:
-                to_content = f.readlines()
-
-            # Compare and show diff
-            diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-            diff = [d.decode("utf8") for d in diff]
-            show_diff(self.view.window(), "".join(diff))
+            show_diff(self.view.window(), from_file, to_file)
 
         self.view.window().show_quick_panel(history_files, on_done)
 
