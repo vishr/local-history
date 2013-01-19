@@ -23,18 +23,18 @@ FILE_SIZE_LIMIT = settings.get("file_size_limit", 262144)
 
 def show_diff(window, from_file, to_file):
     # From
-    # from_file = from_file.decode("utf-8")
+    from_file = from_file.encode("utf-8")
     with open(from_file, "r") as f:
         from_content = f.readlines()
 
     # To
-    # to_file = to_file.decode("utf-8")
+    to_file = to_file.encode("utf-8")
     with open(to_file, "r") as f:
         to_content = f.readlines()
 
     # Compare and show diff
-    diff = difflib.unified_diff(from_content, to_content, "from_file", "to_file")
-    diff = "".join([d.decode("utf-8") for d in diff])
+    diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
+    diff = "".join(diff).decode("utf-8")
     panel = window.new_file()
     panel.set_scratch(True)
     panel.set_syntax_file("Packages/Diff/Diff.tmLanguage")
