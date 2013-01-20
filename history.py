@@ -105,7 +105,11 @@ class HistoryOpen(sublime_plugin.TextCommand):
         history_dir = get_filedir(self.view.file_name())
 
         # Get history files
-        os.chdir(history_dir)
+        try:
+            os.chdir(history_dir)
+        except OSError:
+            sublime.status_message("No Local History Found")
+            return
         history_files = glob.glob("*" + file_name)
         history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         if not history_files:
