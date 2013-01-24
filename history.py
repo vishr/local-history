@@ -188,7 +188,8 @@ class HistoryReplace(sublime_plugin.TextCommand):
             # Replace
             file = history_files[index]
             with open(file) as f:
-                self.view.replace(edit, sublime.Region(0, self.view.size()), f.read())
+                self.view.replace(edit, sublime.Region(0, self.view.size()), \
+                    f.read().decode("utf-8"))
             self.view.run_command("save")
 
         self.view.window().show_quick_panel(history_files, on_done)
