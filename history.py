@@ -63,8 +63,8 @@ class HistorySave(sublime_plugin.EventListener):
             file_path = file_path.encode("utf-8")
             # Return if file exceeds the size limit
             if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
-                print "WARNING: Local History did not save a copy of this file \
-                    because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024)
+                print ("WARNING: Local History did not save a copy of this file \
+                    because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024))
                 return
 
             # Get history directory
