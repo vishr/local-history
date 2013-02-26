@@ -1,5 +1,6 @@
 import sublime
 import sublime_plugin
+import sys
 import os
 import glob
 import platform
@@ -12,64 +13,48 @@ from threading import Thread
 #==============#
 #   Settings   #
 #==============#
-settings = sublime.load_settings("LocalHistory.sublime-settings")
-history_location = settings.get("history_location", "~")
-if history_location == "~":
-    history_location = os.path.expanduser("~")
-HISTORY_PATH = os.path.join(os.path.abspath(history_location), ".sublime", "history")
-HISTORY_LIMIT = settings.get("history_limit", 50)
-FILE_SIZE_LIMIT = settings.get("file_size_limit", 262144)
+PY2 = sys.version_info < (3, 0)
+HISTORY_PATH = os.path.join(os.path.abspath(os.path.expanduser("~")), ".sublime", "history")
+
+#==============#
+#   Messages   #
+#==============#
+NO_HISTORY_MSG = "No local history found"
+NO_INCREMENTAL_DIFF = "No incremental diff found"
+HISTORY_DELETED_MSG = "All local history deleted"
 
 
-def show_diff(window, from_file, to_file):
-    # From
-    from_file = from_file.encode("utf-8")
-    with open(from_file, "r") as f:
-        from_content = f.readlines()
-
-    # To
-    to_file = to_file.encode("utf-8")
-    with open(to_file, "r") as f:
-        to_content = f.readlines()
-
-    # Compare and show diff
-    diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
-    diff = "".join(diff).decode("utf-8")
-    panel = window.new_file()
-    panel.set_scratch(True)
-    panel.set_syntax_file("Packages/Diff/Diff.tmLanguage")
-    panel_edit = panel.begin_edit()
-    panel.insert(panel_edit, 0, diff)
-    panel.end_edit(panel_edit)
-
-
-def get_filedir(file_path):
+def get_file_dir(file_path):
     file_dir = os.path.dirname(file_path)
     if platform.system() == "Windows":
-        if file_dir.find("\\") == 0:
-            file_dir = file_dir[2:]  # Strip the network \\ starting path
+        if file_dir.find(os.sep) == 0:
+            file_dir = file_dir[1:]  # Strip the network \\ starting path
         if file_dir.find(":") == 1:
             file_dir = file_dir.replace(":", "", 1)
     else:
-        file_dir = file_dir[file_dir.find(os.sep) + 1:]  # Trim the root
+        file_dir = file_dir[1:]  # Trim the root
     return os.path.join(HISTORY_PATH, file_dir)
 
 
 class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
+        settings = sublime.load_settings("LocalHistory.sublime-settings")
+        FILE_SIZE_LIMIT = settings.get("file_size_limit")
+        HISTORY_LIMIT = settings.get("history_limit")
 
         def run(file_path):
-            file_path = file_path.encode("utf-8")
+            if PY2:
+                file_path = file_path.encode("utf-8")
             # Return if file exceeds the size limit
             if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
-                print "WARNING: Local History did not save a copy of this file \
-                    because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024)
+                print ("WARNING: Local History did not save a copy of this file \
+                    because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024))
                 return
 
             # Get history directory
             file_name = os.path.basename(file_path)
-            history_dir = get_filedir(file_path)
+            history_dir = get_file_dir(file_path)
             if not os.path.exists(history_dir):
                 # Create directory structure
                 os.makedirs(history_dir)
@@ -102,18 +87,18 @@ class HistoryOpen(sublime_plugin.TextCommand):
     def run(self, edit):
         # Get history directory
         file_name = os.path.basename(self.view.file_name())
-        history_dir = get_filedir(self.view.file_name())
+        history_dir = get_file_dir(self.view.file_name())
 
         # Get history files
         try:
             os.chdir(history_dir)
         except OSError:
-            sublime.status_message("No Local History Found")
+            sublime.status_message(NO_HISTORY_MSG)
             return
         history_files = glob.glob("*" + file_name)
         history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         if not history_files:
-            sublime.status_message("No Local History Found")
+            sublime.status_message(NO_HISTORY_MSG)
             return
 
         def on_done(index):
@@ -132,7 +117,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
     def run(self, edit):
         # Get history directory
         file_name = os.path.basename(self.view.file_name())
-        history_dir = get_filedir(self.view.file_name())
+        history_dir = get_file_dir(self.view.file_name())
 
         # Get history files
         os.chdir(history_dir)
@@ -142,7 +127,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
         history_files = history_files[1:]
 
         if not history_files:
-            sublime.status_message("No Local History Found")
+            sublime.status_message(NO_HISTORY_MSG)
             return
 
         def on_done(index):
@@ -157,7 +142,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
             # Show diff
             from_file = history_files[index]
             to_file = self.view.file_name()
-            show_diff(self.view.window(), from_file, to_file)
+            self.view.run_command("show_diff", {"from_file": from_file, "to_file": to_file})
 
         self.view.window().show_quick_panel(history_files, on_done)
 
@@ -167,7 +152,7 @@ class HistoryReplace(sublime_plugin.TextCommand):
     def run(self, edit):
         # Get history directory
         file_name = os.path.basename(self.view.file_name())
-        history_dir = get_filedir(self.view.file_name())
+        history_dir = get_file_dir(self.view.file_name())
 
         # Get history files
         os.chdir(history_dir)
@@ -177,7 +162,7 @@ class HistoryReplace(sublime_plugin.TextCommand):
         history_files = history_files[1:]
 
         if not history_files:
-            sublime.status_message("No Local History Found")
+            sublime.status_message(NO_HISTORY_MSG)
             return
 
         def on_done(index):
@@ -188,8 +173,10 @@ class HistoryReplace(sublime_plugin.TextCommand):
             # Replace
             file = history_files[index]
             with open(file) as f:
-                self.view.replace(edit, sublime.Region(0, self.view.size()), \
-                    f.read().decode("utf-8"))
+                data = f.read()
+                if PY2:
+                    data.decode("utf-8")
+                self.view.replace(edit, sublime.Region(0, self.view.size()), data)
             self.view.run_command("save")
 
         self.view.window().show_quick_panel(history_files, on_done)
@@ -197,17 +184,17 @@ class HistoryReplace(sublime_plugin.TextCommand):
 
 class HistoryIncrementalDiff(sublime_plugin.TextCommand):
 
-    def run(self, edit, **kwargs):
+    def run(self, edit):
         # Get history directory
         file_name = os.path.basename(self.view.file_name())
-        history_dir = get_filedir(self.view.file_name())
+        history_dir = get_file_dir(self.view.file_name())
 
         # Get history files
         os.chdir(history_dir)
         history_files = glob.glob("*" + file_name)
         history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         if len(history_files) < 2:
-            sublime.status_message("No Incremental Diff Found")
+            sublime.status_message(NO_INCREMENTAL_DIFF)
             return
 
         def on_done(index):
@@ -217,19 +204,53 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
 
             # Selected the last file
             if index == len(history_files) - 1:
-                sublime.status_message("No Incremental Diff Found")
+                sublime.status_message(NO_INCREMENTAL_DIFF)
                 return
 
             # Show diff
             from_file = history_files[index + 1]
             to_file = history_files[index]
-            show_diff(self.view.window(), from_file, to_file)
+            self.view.run_command("show_diff", {"from_file": from_file, "to_file": to_file})
 
         self.view.window().show_quick_panel(history_files, on_done)
+
+
+class ShowDiff(sublime_plugin.TextCommand):
+
+    def run(self, edit, **kwargs):
+        from_file = kwargs["from_file"]
+        to_file = kwargs["to_file"]
+        # From
+        if PY2:
+            from_file = from_file.encode("utf-8")
+            with open(from_file, "r") as f:
+                from_content = f.readlines()
+        else:
+            with open(from_file, "r", encoding="utf-8") as f:
+                from_content = f.readlines()
+
+        # To
+        if PY2:
+            to_file = to_file.encode("utf-8")
+            with open(to_file, "r") as f:
+                to_content = f.readlines()
+        else:
+            with open(to_file, "r", encoding="utf-8") as f:
+                to_content = f.readlines()
+
+        # Compare and show diff
+        diff = difflib.unified_diff(from_content, to_content, from_file, to_file)
+        diff = "".join(diff)
+        if PY2:
+            diff = diff.decode("utf-8")
+        panel = sublime.active_window().new_file()
+        panel.set_scratch(True)
+        panel.set_syntax_file("Packages/Diff/Diff.tmLanguage")
+        panel.insert(edit, 0, diff)
 
 
 class HistoryDeleteAll(sublime_plugin.TextCommand):
 
     def run(self, edit):
         shutil.rmtree(HISTORY_PATH)
-        sublime.status_message("All Local History Deleted")
+        sublime.status_message(HISTORY_DELETED_MSG)

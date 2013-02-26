@@ -1,5 +1,4 @@
 {
-  "history_location": "~", // User's home directory
-  "history_limit": 50,
+  "history_limit": 100,
   "file_size_limit": 262144 // 256 KiB
 }
