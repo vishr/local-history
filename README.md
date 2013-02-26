@@ -18,7 +18,7 @@ e.g., `/Users/vrana/.sublime/history/foo/bar/Oct.14.2012_14.48.47.history.py`
 
 **With Git:** Clone the repository in your Sublime Text "Packages" directory:
 
-    git clone git@github.com:vishr/local-history.git "Local History"
+    git clone https://github.com/vishr/local-history.git "Local History"
 
 The "Packages" directory location:
 
