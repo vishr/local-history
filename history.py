@@ -71,7 +71,7 @@ class HistorySave(sublime_plugin.EventListener):
 
             # Store history
             shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".
-                format(dt.now().strftime("%b.%d.%Y_%H.%M.%S"), file_name)))
+                format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
 
             # Remove old files
             for file in history_files[HISTORY_LIMIT - 1:]:  # -1 as we just added a new file
