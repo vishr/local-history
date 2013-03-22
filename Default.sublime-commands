@@ -1,4 +1,7 @@
 [{
+  "caption": "Local History: Browse",
+  "command": "history_browse"
+}, {
   "caption": "Local History: Open",
   "command": "history_open"
 }, {

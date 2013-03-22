@@ -1,5 +1,3 @@
-import sublime
-import sublime_plugin
 import sys
 import os
 import glob
@@ -9,12 +7,18 @@ import difflib
 import filecmp
 import shutil
 from threading import Thread
+import subprocess
+import sublime
+import sublime_plugin
 
 #==============#
 #   Settings   #
 #==============#
 PY2 = sys.version_info < (3, 0)
-HISTORY_PATH = os.path.join(os.path.abspath(os.path.expanduser("~")), ".sublime", "history")
+HISTORY_ROOT = os.path.join(os.path.abspath(os.path.expanduser("~")), ".sublime", "history")
+settings = sublime.load_settings("LocalHistory.sublime-settings")
+FILE_SIZE_LIMIT = settings.get("file_size_limit")
+HISTORY_LIMIT = settings.get("history_limit")
 
 #==============#
 #   Messages   #
@@ -33,16 +37,12 @@ def get_file_dir(file_path):
             file_dir = file_dir.replace(":", "", 1)
     else:
         file_dir = file_dir[1:]  # Trim the root
-    return os.path.join(HISTORY_PATH, file_dir)
+    return os.path.join(HISTORY_ROOT, file_dir)
 
 
 class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
-        settings = sublime.load_settings("LocalHistory.sublime-settings")
-        FILE_SIZE_LIMIT = settings.get("file_size_limit")
-        HISTORY_LIMIT = settings.get("history_limit")
-
         def run(file_path):
             if PY2:
                 file_path = file_path.encode("utf-8")
@@ -70,8 +70,7 @@ class HistorySave(sublime_plugin.EventListener):
                     return
 
             # Store history
-            shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".
-                format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
+            shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
 
             # Remove old files
             for file in history_files[HISTORY_LIMIT - 1:]:  # -1 as we just added a new file
@@ -80,6 +79,18 @@ class HistorySave(sublime_plugin.EventListener):
         # Process in a thread
         t = Thread(target=run, args=(view.file_name(),))
         t.start()
+
+
+class HistoryBrowse(sublime_plugin.TextCommand):
+
+    def run(self, edit):
+        system = platform.system()
+        if system == "Darwin":
+            subprocess.call(["open", get_file_dir(self.view.file_name())])
+        elif system == "Linux":
+            subprocess.call(["xdg-open", get_file_dir(self.view.file_name())])
+        elif system == "Windows":
+            subprocess.call(["explorer", get_file_dir(self.view.file_name())])
 
 
 class HistoryOpen(sublime_plugin.TextCommand):
@@ -252,5 +263,5 @@ class ShowDiff(sublime_plugin.TextCommand):
 class HistoryDeleteAll(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        shutil.rmtree(HISTORY_PATH)
+        shutil.rmtree(HISTORY_ROOT)
         sublime.status_message(HISTORY_DELETED_MSG)

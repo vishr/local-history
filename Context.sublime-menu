@@ -3,6 +3,9 @@
 }, {
   "caption": "Local History",
   "children": [{
+    "caption": "Browse",
+    "command": "history_browse"
+  }, {
     "caption": "Open",
     "command": "history_open"
   }, {

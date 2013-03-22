@@ -1,5 +1,5 @@
 # Local History
-A Sublime Text 2 plugin for maintaining local history of files
+A Sublime Text 2/3 plugin for maintaining local history of files
 
 ##Benefits
 
@@ -30,14 +30,17 @@ The "Packages" directory location:
     `%APPDATA%/Sublime Text 2/Packages/`
 
 ## Usage
-![Settings](http://i.imgur.com/vD3QT.png)
-
-![Open | Compare | Replace | Incremental Diff](http://i.imgur.com/qeoGl.png)
-
-![Open | Compare | Replace | Incremental Diff](http://i.imgur.com/ADMgy.png)
+![Open | Compare | Replace | Incremental Diff](http://i.imgur.com/jNMrT8Q.png)
 
 ![Delete All](http://i.imgur.com/nUlx8.png)
 
+### Settings
+```js
+{
+  "history_limit": 100,
+  "file_size_limit": 262144 // 256 KiB
+}
+```
 
 ## Caveats
 
