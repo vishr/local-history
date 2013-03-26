@@ -16,9 +16,6 @@ import sublime_plugin
 #==============#
 PY2 = sys.version_info < (3, 0)
 HISTORY_ROOT = os.path.join(os.path.abspath(os.path.expanduser("~")), ".sublime", "history")
-settings = sublime.load_settings("LocalHistory.sublime-settings")
-FILE_SIZE_LIMIT = settings.get("file_size_limit")
-HISTORY_LIMIT = settings.get("history_limit")
 
 #==============#
 #   Messages   #
@@ -43,6 +40,11 @@ def get_file_dir(file_path):
 class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
+        # https://github.com/vishr/local-history/issues/29
+        settings = sublime.load_settings("LocalHistory.sublime-settings")
+        FILE_SIZE_LIMIT = settings.get("file_size_limit")
+        HISTORY_LIMIT = settings.get("history_limit")
+
         def run(file_path):
             if PY2:
                 file_path = file_path.encode("utf-8")
