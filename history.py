@@ -153,7 +153,7 @@ class HistoryCompare(sublime_plugin.TextCommand):
                 self.view.run_command("save")
 
             # Show diff
-            from_file = history_files[index]
+            from_file = os.path.join(history_dir, history_files[index])
             to_file = self.view.file_name()
             self.view.run_command("show_diff", {"from_file": from_file, "to_file": to_file})
 
@@ -184,7 +184,7 @@ class HistoryReplace(sublime_plugin.TextCommand):
                 return
 
             # Replace
-            file = history_files[index]
+            file = os.path.join(history_dir, history_files[index])
             with open(file) as f:
                 data = f.read()
                 if PY2:
@@ -221,8 +221,8 @@ class HistoryIncrementalDiff(sublime_plugin.TextCommand):
                 return
 
             # Show diff
-            from_file = history_files[index + 1]
-            to_file = history_files[index]
+            from_file = os.path.join(history_dir, history_files[index + 1])
+            to_file = os.path.join(history_dir, history_files[index])
             self.view.run_command("show_diff", {"from_file": from_file, "to_file": to_file})
 
         self.view.window().show_quick_panel(history_files, on_done)
