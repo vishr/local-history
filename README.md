@@ -37,7 +37,7 @@ The "Packages" directory location:
 ### Settings
 ```js
 {
-  "history_limit": 100,
+  "file_history_retention": 30, // In days
   "file_size_limit": 262144 // 256 KiB
 }
 ```
