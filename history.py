@@ -2,6 +2,7 @@ import sys
 import os
 import glob
 import platform
+import time
 from datetime import datetime as dt
 import difflib
 import filecmp
@@ -43,7 +44,7 @@ class HistorySave(sublime_plugin.EventListener):
         # https://github.com/vishr/local-history/issues/29
         settings = sublime.load_settings("LocalHistory.sublime-settings")
         FILE_SIZE_LIMIT = settings.get("file_size_limit")
-        HISTORY_LIMIT = settings.get("history_limit")
+        FILE_HISTORY_RETENTION = settings.get("file_history_retention") * 86400  # Convert to seconds
 
         def run(file_path):
             if PY2:
@@ -75,8 +76,10 @@ class HistorySave(sublime_plugin.EventListener):
             shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
 
             # Remove old files
-            for file in history_files[HISTORY_LIMIT - 1:]:  # -1 as we just added a new file
-                os.remove(file)
+            present = time.time()
+            for file in history_files:
+                if os.path.getmtime(file) < present - FILE_HISTORY_RETENTION:
+                    os.remove(file)
 
         # Process in a thread
         t = Thread(target=run, args=(view.file_name(),))
