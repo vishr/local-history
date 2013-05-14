@@ -39,51 +39,59 @@ def get_file_dir(file_path):
 
 
 class HistorySave(sublime_plugin.EventListener):
+    def on_close(self, view):
+        settings = sublime.load_settings("LocalHistory.sublime-settings")
+        if settings.get("history_on_close", False):
+            t = Thread(target=self.process_history, args=(view.file_name(),))
+            t.start()
 
     def on_post_save(self, view):
         # https://github.com/vishr/local-history/issues/29
         settings = sublime.load_settings("LocalHistory.sublime-settings")
+
+        # Process in a thread
+        if not settings.get("history_on_close", False):
+            t = Thread(target=self.process_history, args=(view.file_name(),))
+            t.start()
+
+    def process_history(self, file_path):
+        settings = sublime.load_settings("LocalHistory.sublime-settings")
         FILE_SIZE_LIMIT = settings.get("file_size_limit")
         FILE_HISTORY_RETENTION = settings.get("file_history_retention") * 86400  # Convert to seconds
 
-        def run(file_path):
-            if PY2:
-                file_path = file_path.encode("utf-8")
-            # Return if file exceeds the size limit
-            if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
-                print ("WARNING: Local History did not save a copy of this file \
-                    because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024))
+        if PY2:
+            file_path = file_path.encode("utf-8")
+        # Return if file exceeds the size limit
+        if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
+            print ("WARNING: Local History did not save a copy of this file \
+                because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024))
+            return
+
+        # Get history directory
+        file_name = os.path.basename(file_path)
+        history_dir = get_file_dir(file_path)
+        if not os.path.exists(history_dir):
+            # Create directory structure
+            os.makedirs(history_dir)
+
+        # Get history files
+        os.chdir(history_dir)
+        history_files = glob.glob("*" + file_name)
+        history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
+
+        # Skip if no changes
+        if history_files:
+            if filecmp.cmp(file_path, os.path.join(history_dir, history_files[0])):
                 return
 
-            # Get history directory
-            file_name = os.path.basename(file_path)
-            history_dir = get_file_dir(file_path)
-            if not os.path.exists(history_dir):
-                # Create directory structure
-                os.makedirs(history_dir)
+        # Store history
+        shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
 
-            # Get history files
-            os.chdir(history_dir)
-            history_files = glob.glob("*" + file_name)
-            history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
-
-            # Skip if no changes
-            if history_files:
-                if filecmp.cmp(file_path, os.path.join(history_dir, history_files[0])):
-                    return
-
-            # Store history
-            shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
-
-            # Remove old files
-            present = time.time()
-            for file in history_files:
-                if os.path.getmtime(file) < present - FILE_HISTORY_RETENTION:
-                    os.remove(file)
-
-        # Process in a thread
-        t = Thread(target=run, args=(view.file_name(),))
-        t.start()
+        # Remove old files
+        present = time.time()
+        for file in history_files:
+            if os.path.getmtime(file) < present - FILE_HISTORY_RETENTION:
+                os.remove(file)
 
 
 class HistoryBrowse(sublime_plugin.TextCommand):
