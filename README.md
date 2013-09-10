@@ -1,7 +1,7 @@
 # Local History
 A Sublime Text 2/3 plugin for maintaining local history of files
 
-##Benefits
+## Benefits
 
 * Every time you modify a file, a copy of the old contents is kept in the local history.
 * At any time, you can compare or replace a file with any older version from the history.
