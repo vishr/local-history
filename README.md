@@ -42,7 +42,3 @@ The "Packages" directory location:
   "history_on_close": false // "true" to store on closing a view
 }
 ```
-
-## Caveats
-
-* As this plugin is continuously evolving, please delete the history and reinstall the plugin incase you face any problems.
