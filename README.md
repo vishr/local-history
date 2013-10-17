@@ -38,7 +38,8 @@ The "Packages" directory location:
 ```js
 {
   "file_history_retention": 30, // In days
-  "file_size_limit": 262144 // 256 KiB
+  "file_size_limit": 262144, // 256 KiB
+  "history_on_close": false // "true" to store on closing a view
 }
 ```
 
