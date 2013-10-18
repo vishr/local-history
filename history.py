@@ -25,7 +25,6 @@ NO_HISTORY_MSG = "No local history found"
 NO_INCREMENTAL_DIFF = "No incremental diff found"
 HISTORY_DELETED_MSG = "All local history deleted"
 
-
 def get_file_dir(file_path):
     file_dir = os.path.dirname(file_path)
     if platform.system() == "Windows":
@@ -39,32 +38,30 @@ def get_file_dir(file_path):
 
 
 class HistorySave(sublime_plugin.EventListener):
-    def on_close(self, view):
+
+    def __init__(self):
         settings = sublime.load_settings("LocalHistory.sublime-settings")
-        if settings.get("history_on_close", False):
+        self.FILE_SIZE_LIMIT = settings.get("file_size_limit")
+        self.FILE_HISTORY_RETENTION = settings.get("file_history_retention") * 86400  # Convert to seconds
+        self.HISTORY_ON_CLOSE = settings.get("history_on_close")
+
+    def on_close(self, view):
+        if self.HISTORY_ON_CLOSE:
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def on_post_save(self, view):
-        # https://github.com/vishr/local-history/issues/29
-        settings = sublime.load_settings("LocalHistory.sublime-settings")
-
-        # Process in a thread
-        if not settings.get("history_on_close", False):
+        if not self.HISTORY_ON_CLOSE:
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def process_history(self, file_path):
-        settings = sublime.load_settings("LocalHistory.sublime-settings")
-        FILE_SIZE_LIMIT = settings.get("file_size_limit")
-        FILE_HISTORY_RETENTION = settings.get("file_history_retention") * 86400  # Convert to seconds
-
         if PY2:
             file_path = file_path.encode("utf-8")
         # Return if file exceeds the size limit
-        if os.path.getsize(file_path) > FILE_SIZE_LIMIT:
+        if os.path.getsize(file_path) > self.FILE_SIZE_LIMIT:
             print ("WARNING: Local History did not save a copy of this file \
-                because it has exceeded {0}KB limit.".format(FILE_SIZE_LIMIT / 1024))
+                because it has exceeded {0}KB limit.".format(self.FILE_SIZE_LIMIT / 1024))
             return
 
         # Get history directory
@@ -88,9 +85,9 @@ class HistorySave(sublime_plugin.EventListener):
         shutil.copyfile(file_path, os.path.join(history_dir, "{0}.{1}".format(dt.now().strftime("%Y-%m-%d_%H.%M.%S"), file_name)))
 
         # Remove old files
-        present = time.time()
+        now = time.time()
         for file in history_files:
-            if os.path.getmtime(file) < present - FILE_HISTORY_RETENTION:
+            if os.path.getmtime(file) < now - self.FILE_HISTORY_RETENTION:
                 os.remove(file)
 
 

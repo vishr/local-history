@@ -39,6 +39,6 @@ The "Packages" directory location:
 {
   "file_history_retention": 30, // In days
   "file_size_limit": 262144, // 256 KiB
-  "history_on_close": false // "true" to store on closing a view
+  "history_on_close": false // Set to "true" to save history only on close
 }
 ```
