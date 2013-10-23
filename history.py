@@ -26,7 +26,7 @@ def load_settings():
     global HISTORY_ON_CLOSE
 
     FILE_SIZE_LIMIT = settings.get("file_size_limit")
-    FILE_HISTORY_RETENTION = settings.get("file_history_retention")
+    FILE_HISTORY_RETENTION = settings.get("file_history_retention") * 86400  # Convert to seconds
     HISTORY_ON_CLOSE = settings.get("history_on_close")
 
 load_settings()
