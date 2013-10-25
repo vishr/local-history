@@ -29,8 +29,8 @@ def load_settings():
     FILE_HISTORY_RETENTION = settings.get("file_history_retention") * 86400  # Convert to seconds
     HISTORY_ON_CLOSE = settings.get("history_on_close")
 
-load_settings()
 PY2 = sys.version_info < (3, 0)
+if PY2: load_settings()
 HISTORY_ROOT = os.path.join(os.path.abspath(os.path.expanduser("~")), ".sublime", "history")
 
 #==============#
