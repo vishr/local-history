@@ -20,12 +20,15 @@ NO_INCREMENTAL_DIFF = 'No incremental diff found'
 HISTORY_DELETED_MSG = 'All local history deleted'
 
 PY2 = sys.version_info < (3, 0)
-HISTORY_PATH = os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'history')
 
-def get_setting(key, default):
+def get_setting(key, default=None):
     return sublime.load_settings('LocalHistory.sublime-settings').get(key, default)
 
-def get_file_dir(file_path):
+def get_history_path():
+    default_history_path = os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'history')
+    return get_setting("history_path", default_history_path)
+
+def get_file_dir(file_path, history_path=get_history_path()):
     file_dir = os.path.dirname(file_path)
     if platform.system() == 'Windows':
         if file_dir.find(os.sep) == 0:
@@ -34,7 +37,7 @@ def get_file_dir(file_path):
             file_dir = file_dir.replace(':', '', 1)
     else:
         file_dir = file_dir[1:]  # Trim the root
-    return os.path.join(HISTORY_PATH, file_dir)
+    return os.path.join(history_path, file_dir)
 
 
 class HistorySave(sublime_plugin.EventListener):
@@ -44,6 +47,7 @@ class HistorySave(sublime_plugin.EventListener):
         self.HISTORY_RETENTION = get_setting('history_retention', 30)
         self.HISTORY_RETENTION *= 86400  # convert to seconds
         self.HISTORY_ON_CLOSE = get_setting('history_on_close', False)
+        self.HISTORY_PATH = get_history_path()
 
     def on_close(self, view):
         if self.HISTORY_ON_CLOSE:
@@ -66,7 +70,7 @@ class HistorySave(sublime_plugin.EventListener):
 
         # Get history directory
         file_name = os.path.basename(file_path)
-        history_dir = get_file_dir(file_path)
+        history_dir = get_file_dir(file_path, self.HISTORY_PATH)
         if not os.path.exists(history_dir):
             # Create directory structure
             os.makedirs(history_dir)

@@ -40,5 +40,6 @@ The "Packages" directory location:
 	  "file_size_limit": 262144, // 256 KB
 	  "history_retention": 30, // in days
 	  "history_on_close": false // store history only on close
+	  "history_path": "<path>" // path to store history, defaults to <HOME>/.sublime/history
 }
 ```
