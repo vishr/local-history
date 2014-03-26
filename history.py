@@ -279,5 +279,5 @@ class ShowDiff(sublime_plugin.TextCommand):
 class HistoryDeleteAll(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        shutil.rmtree(HISTORY_PATH)
+        shutil.rmtree(get_history_path())
         sublime.status_message(HISTORY_DELETED_MSG)
