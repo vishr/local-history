@@ -80,9 +80,10 @@ e.g., <code>/Users/vrana/.sublime/history/foo/bar/Oct.14.2012_14.48.47.history.p
 <a name="settings" class="anchor" href="#settings"><span class="octicon octicon-link"></span></a>Settings</h3>
 
 <div class="highlight highlight-js"><pre><span class="p">{</span>
-  <span class="s2">"file_history_retention"</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span> <span class="c1">// In days</span>
-  <span class="s2">"file_size_limit"</span><span class="o">:</span> <span class="mi">262144</span><span class="p">,</span> <span class="c1">// 256 KiB</span>
-  <span class="s2">"history_on_close"</span><span class="o">:</span> <span class="kc">false</span> <span class="c1">// Set to "true" to save history only on close</span>
+      <span class="s2">"file_size_limit"</span><span class="o">:</span> <span class="mi">262144</span><span class="p">,</span> <span class="c1">// 256 KB</span>
+      <span class="s2">"history_retention"</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span> <span class="c1">// in days</span>
+      <span class="s2">"history_on_close"</span><span class="o">:</span> <span class="kc">false</span> <span class="c1">// store history only on close</span>
+      <span class="s2">"history_path"</span><span class="o">:</span> <span class="s2">"&lt;path&gt;"</span> <span class="c1">// path to store history, defaults to &lt;HOME&gt;/.sublime/history</span>
 <span class="p">}</span>
 </pre></div>
       </section>
