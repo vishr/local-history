@@ -4,7 +4,7 @@ A Sublime Text 2/3 plugin for maintaining local history of files
 ## Benefits
 
 * Every time you modify a file, a copy of the old contents is kept in the local history.
-* At any time, you can compare or replace a file with any older version from the history.
+* At any time, you can compare a file with any older version from the history.
 * View incremental diff of any file from the history.
 * It can help you out when you change or delete a file by accident.
 * The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
@@ -30,7 +30,7 @@ The "Packages" directory location:
     `%APPDATA%/Sublime Text 2/Packages/`
 
 ## Usage
-![Open | Compare | Replace | Incremental Diff](http://i.imgur.com/jNMrT8Q.png)
+![Open | Compare | Incremental Diff](http://i.imgur.com/jNMrT8Q.png)
 
 ![Delete All](http://i.imgur.com/nUlx8.png)
 

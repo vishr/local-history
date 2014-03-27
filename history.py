@@ -21,6 +21,10 @@ HISTORY_DELETED_MSG = 'All local history deleted'
 
 PY2 = sys.version_info < (3, 0)
 
+# For ST3
+def plugin_loaded():
+    sublime.load_settings('LocalHistory.sublime-settings')
+
 def get_setting(key, default=None):
     return sublime.load_settings('LocalHistory.sublime-settings').get(key, default)
 
@@ -42,20 +46,13 @@ def get_file_dir(file_path, history_path=get_history_path()):
 
 class HistorySave(sublime_plugin.EventListener):
 
-    def __init__(self):
-        self.FILE_SIZE_LIMIT = get_setting('file_size_limit', 262144)
-        self.HISTORY_RETENTION = get_setting('history_retention', 30)
-        self.HISTORY_RETENTION *= 86400  # convert to seconds
-        self.HISTORY_ON_CLOSE = get_setting('history_on_close', False)
-        self.HISTORY_PATH = get_history_path()
-
     def on_close(self, view):
-        if self.HISTORY_ON_CLOSE:
+        if get_setting('history_on_close'):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def on_post_save(self, view):
-        if not self.HISTORY_ON_CLOSE:
+        if not get_setting('history_on_close'):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
@@ -63,14 +60,14 @@ class HistorySave(sublime_plugin.EventListener):
         if PY2:
             file_path = file_path.encode('utf-8')
         # Return if file exceeds the size limit
-        if os.path.getsize(file_path) > self.FILE_SIZE_LIMIT:
+        if os.path.getsize(file_path) > get_setting('file_size_limit'):
             print ('WARNING: Local History did not save a copy of this file \
-                because it has exceeded {0}KB limit.'.format(self.FILE_SIZE_LIMIT / 1024))
+                because it has exceeded {0}KB limit.'.format(get_setting('file_size_limit') / 1024))
             return
 
         # Get history directory
         file_name = os.path.basename(file_path)
-        history_dir = get_file_dir(file_path, self.HISTORY_PATH)
+        history_dir = get_file_dir(file_path, get_history_path())
         if not os.path.exists(history_dir):
             # Create directory structure
             os.makedirs(history_dir)
@@ -91,9 +88,10 @@ class HistorySave(sublime_plugin.EventListener):
                 file_name)))
 
         # Remove old files
+        history_retention = get_setting('history_retention') * 86400 # convert to seconds
         now = time.time()
         for file in history_files:
-            if os.path.getmtime(file) < now - self.HISTORY_RETENTION:
+            if os.path.getmtime(file) < now - history_retention:
                 os.remove(file)
 
 
@@ -170,41 +168,6 @@ class HistoryCompare(sublime_plugin.TextCommand):
             from_file = os.path.join(history_dir, history_files[index])
             to_file = self.view.file_name()
             self.view.run_command('show_diff', {'from_file': from_file, 'to_file': to_file})
-
-        self.view.window().show_quick_panel(history_files, on_done)
-
-
-class HistoryReplace(sublime_plugin.TextCommand):
-
-    def run(self, edit):
-        # Get history directory
-        file_name = os.path.basename(self.view.file_name())
-        history_dir = get_file_dir(self.view.file_name())
-
-        # Get history files
-        os.chdir(history_dir)
-        history_files = glob.glob('*' + file_name)
-        history_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
-        # Skip the first one as its always identical
-        history_files = history_files[1:]
-
-        if not history_files:
-            sublime.status_message(NO_HISTORY_MSG)
-            return
-
-        def on_done(index):
-            # Escape
-            if index == -1:
-                return
-
-            # Replace
-            file = os.path.join(history_dir, history_files[index])
-            with open(file) as f:
-                data = f.read()
-                if PY2:
-                    data.decode('utf-8')
-                self.view.replace(edit, sublime.Region(0, self.view.size()), data)
-            self.view.run_command('save')
 
         self.view.window().show_quick_panel(history_files, on_done)
 
