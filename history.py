@@ -31,7 +31,7 @@ def get_history_path():
     default_history_path = os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'history')
     return S.get("history_path", default_history_path)
 
-def get_file_dir(file_path, history_path):
+def get_file_dir(file_path, history_path=None):
     if history_path is None:
         history_path = get_history_path()
     file_dir = os.path.dirname(file_path)
