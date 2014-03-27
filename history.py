@@ -53,21 +53,25 @@ class HistorySave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         if not get_setting('history_on_close'):
-            t = Thread(target=self.process_history, args=(view.file_name(),))
+            get_setting('file_size_limit')
+            t = Thread(target=self.process_history, args=(view.file_name(),
+                get_history_path(),
+                get_setting('file_size_limit'),
+                get_setting('history_retention')))
             t.start()
 
-    def process_history(self, file_path):
+    def process_history(self, file_path, history_path, file_size_limit, history_retention):
         if PY2:
             file_path = file_path.encode('utf-8')
         # Return if file exceeds the size limit
-        if os.path.getsize(file_path) > get_setting('file_size_limit'):
+        if os.path.getsize(file_path) > file_size_limit:
             print ('WARNING: Local History did not save a copy of this file \
-                because it has exceeded {0}KB limit.'.format(get_setting('file_size_limit') / 1024))
+                because it has exceeded {0}KB limit.'.format(file_size_limit / 1024))
             return
 
         # Get history directory
         file_name = os.path.basename(file_path)
-        history_dir = get_file_dir(file_path, get_history_path())
+        history_dir = get_file_dir(file_path, history_path)
         if not os.path.exists(history_dir):
             # Create directory structure
             os.makedirs(history_dir)
@@ -88,10 +92,9 @@ class HistorySave(sublime_plugin.EventListener):
                 file_name)))
 
         # Remove old files
-        history_retention = get_setting('history_retention') * 86400 # convert to seconds
         now = time.time()
         for file in history_files:
-            if os.path.getmtime(file) < now - history_retention:
+            if os.path.getmtime(file) < now - history_retention * 86400: # convert to seconds
                 os.remove(file)
 
 
