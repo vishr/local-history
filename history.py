@@ -20,17 +20,16 @@ NO_INCREMENTAL_DIFF = 'No incremental diff found'
 HISTORY_DELETED_MSG = 'All local history deleted'
 
 PY2 = sys.version_info < (3, 0)
+S = sublime.load_settings('LocalHistory.sublime-settings')
 
 # For ST3
 def plugin_loaded():
-    sublime.load_settings('LocalHistory.sublime-settings')
-
-def get_setting(key, default=None):
-    return sublime.load_settings('LocalHistory.sublime-settings').get(key, default)
+    global S
+    S = sublime.load_settings('LocalHistory.sublime-settings')
 
 def get_history_path():
     default_history_path = os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'history')
-    return get_setting("history_path", default_history_path)
+    return S.get("history_path", default_history_path)
 
 def get_file_dir(file_path, history_path=get_history_path()):
     file_dir = os.path.dirname(file_path)
@@ -47,17 +46,17 @@ def get_file_dir(file_path, history_path=get_history_path()):
 class HistorySave(sublime_plugin.EventListener):
 
     def on_close(self, view):
-        if get_setting('history_on_close'):
+        if S.get('history_on_close'):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def on_post_save(self, view):
-        if not get_setting('history_on_close'):
-            get_setting('file_size_limit')
+        if not S.get('history_on_close'):
+            S.get('file_size_limit')
             t = Thread(target=self.process_history, args=(view.file_name(),
                 get_history_path(),
-                get_setting('file_size_limit'),
-                get_setting('history_retention')))
+                S.get('file_size_limit'),
+                S.get('history_retention')))
             t.start()
 
     def process_history(self, file_path, history_path, file_size_limit, history_retention):
