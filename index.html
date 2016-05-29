@@ -31,64 +31,120 @@
         <h1>
 <a id="local-history" class="anchor" href="#local-history" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Local History</h1>
 
-<p>A Sublime Text 2/3 plugin for maintaining local history of files</p>
+<p><a href="https://github.com/vishr/local-history/tree/master/LICENSE.md"><img src="https://img.shields.io/github/license/vishr/local-history.svg?style=flat-square" alt="GitHub license"></a>
+<a href="https://packagecontrol.io/packages/Local%20History"><img src="https://img.shields.io/packagecontrol/dt/Local%20History.svg?style=flat-square" alt="Total downloads via Package Control"></a>
+<a href="https://packagecontrol.io/packages/Local%20History"><img src="https://img.shields.io/packagecontrol/dm/Local%20History.svg?style=flat-square" alt="Monthly downloads via Package Control"></a></p>
+
+<p>A <a href="https://www.sublimetext.com">Sublime Text</a> package for maintaining a local history of files.</p>
 
 <h2>
 <a id="benefits" class="anchor" href="#benefits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Benefits</h2>
 
 <ul>
-<li>Every time you modify a file, a copy of the old contents is kept in the local history.</li>
-<li>At any time, you can compare a file with any older version from the history.</li>
-<li>View incremental diff of any file from the history.</li>
-<li>It can help you out when you change or delete a file by accident.</li>
-<li>The history can also help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.</li>
-<li>Each file revision is stored in a separate file (with full path) inside the <code>.sublime/history</code> folder of your home directory.
-e.g., <code>/Users/vrana/.sublime/history/foo/bar/Oct.14.2012_14.48.47.history.py</code>
+<li>Every time you modify a file, a copy of the old contents is kept in the local history when you:
+
+<ul>
+<li>open the file.</li>
+<li>close the file.</li>
+<li>and/or loose focus.</li>
+</ul>
+</li>
+<li>Available functions are:
+
+<ul>
+<li>file comparison of the open file and any of its older versions from the history.</li>
+<li>incremental diff view.</li>
+</ul>
+</li>
+<li>Functions are available via:
+
+<ul>
+<li>the right-click context menu.</li>
+<li>the <code>Local History: ...</code> commands from the command palette.</li>
+</ul>
+</li>
+<li>
+<code>Local History</code> helps you out when you change or delete a file by accident.</li>
+<li>
+<code>Local History</code> can help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.</li>
+<li>Each file revision is stored in a separate file (with full path):
+
+<ul>
+<li>inside the <code>~/.sublime/Local History/</code> folder of your home directory (<code>"portable": false</code>)</li>
+<li>inside the <code>Sublime Text/Data/.sublime/Local History/</code> folder of your <a href="https://www.sublimetext.com">Sublime Text</a> installation (<code>"portable": true</code>)</li>
+</ul>
 </li>
 </ul>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
-<p><strong>With the Package Control plugin:</strong> The easiest way to install this plugin is through <a href="http://wbond.net/sublime_packages/package_control">Package Control</a></p>
-
-<p><strong>Without Git:</strong> Download the latest source zip from <a href="https://github.com/vishr/local-history/zipball/master">github</a> and extract the files to your Sublime Text "Packages" directory, into a new directory named <code>Local History</code>.</p>
-
-<p><strong>With Git:</strong> Clone the repository in your Sublime Text "Packages" directory:</p>
-
-<pre><code>git clone https://github.com/vishr/local-history.git "Local History"
-</code></pre>
-
-<p>The "Packages" directory location:</p>
+<ul>
+<li>Via <a href="https://www.packagecontrol.io">Package Control</a>:
 
 <ul>
-<li>OS X:
-<code>~/Library/Application Support/Sublime Text 2/Packages/</code>
+<li><a href="https://www.packagecontrol.io/installation">Install Package Control</a></li>
+<li>Open the command palette (<kbd>Ctrl</kbd><kbd>⇧ Shift</kbd><kbd>P</kbd>)</li>
+<li>Choose <code>Install Package</code>
 </li>
-<li>Linux:
-<code>~/.Sublime Text 2/Packages/</code>
+<li>Search for <code>Local History</code> and select to install.</li>
+</ul>
 </li>
-<li>Windows:
-<code>%APPDATA%/Sublime Text 2/Packages/</code>
+<li>Clone the repo: <code>git clone git://github.com/vishr/local-history.git "Local History"</code> into your <a href="https://www.sublimetext.com">Sublime Text</a> Packages directory.
+
+<ul>
+<li>via HTTPS: <code>https://github.com/vishr/local-history.git</code>
+</li>
+<li>via SSH: <code>git@github.com:vishr/local-history.git</code>
+</li>
+</ul>
+</li>
+<li>Download an archive file below, unpack it and then re-zip the contents of the <code>Local History</code> subdirectory. Rename <code>Local History.zip</code> to <code>Local History.sublime-package</code> and move it to your <code>Installed Packages</code> subdirectory of your <a href="https://www.sublimetext.com">Sublime Text</a> installation:
+
+<ul>
+<li>current snapshot of master
+
+<ul>
+<li><a href="https://github.com/vishr/local-history/archive/master.zip">current snapshot of master as *.zip</a></li>
+<li><a href="https://github.com/vishr/local-history/archive/master.tar.gz">current snapshot of master as *.tar.gz</a></li>
+</ul>
+</li>
+</ul>
 </li>
 </ul>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<p><img src="http://i.imgur.com/jNMrT8Q.png" alt="Open | Compare | Incremental Diff"></p>
+<p><img src="./docs/context-menu.png" alt="Context Menu" width="350" height="300"></p>
 
-<p><img src="http://i.imgur.com/nUlx8.png" alt="Delete All"></p>
+<ul>
+<li>Functions are available via:
+
+<ul>
+<li>the right-click context menu.</li>
+<li>the <code>Local History: ...</code> commands from the command palette.</li>
+</ul>
+</li>
+</ul>
+
+<p><img src="./docs/tools-menu.png" alt="Tools Menu" width="400" height="320"></p>
+
+<ul>
+<li>To permanently delete all history files, choose <code>Tools &gt; Local History &gt; Delete Local History &gt; Permanently delete all</code>
+</li>
+</ul>
 
 <h3>
 <a id="settings" class="anchor" href="#settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Settings</h3>
 
-<div class="highlight highlight-source-js"><pre>{
-      <span class="pl-s"><span class="pl-pds">"</span>file_size_limit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">262144</span>, <span class="pl-c">// 256 KB</span>
-      <span class="pl-s"><span class="pl-pds">"</span>history_retention<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">30</span>, <span class="pl-c">// in days</span>
-      <span class="pl-s"><span class="pl-pds">"</span>history_on_close<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">false</span> <span class="pl-c">// store history only on close</span>
-      <span class="pl-s"><span class="pl-pds">"</span>history_path<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>&lt;path&gt;<span class="pl-pds">"</span></span> <span class="pl-c">// path to store history, defaults to &lt;HOME&gt;/.sublime/history</span>
-}</pre></div>
+<div class="highlight highlight-source-js"><pre>    <span class="pl-s"><span class="pl-pds">"</span>history_retention<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">0</span>, <span class="pl-c">// number of days to keep files, 0 to disable deletion</span>
+    <span class="pl-s"><span class="pl-pds">"</span>format_timestamp<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>%Y%m%d%H%M%S<span class="pl-pds">"</span></span>, <span class="pl-c">// file_name-XXXXXXXX.file_extension</span>
+    <span class="pl-s"><span class="pl-pds">"</span>history_on_close<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>history_on_focus_lost<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">false</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>history_on_load<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>portable<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span>, <span class="pl-c">// save to 'Sublime Text/Data/.sublime/Local History/...' instead of '~/.sublime/Local History/...'</span>
+    <span class="pl-s"><span class="pl-pds">"</span>file_size_limit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">4194304</span> <span class="pl-c">// 4 MB</span></pre></div>
       </section>
     </div>
 
