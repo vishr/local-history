@@ -1,0 +1,34 @@
+[
+    {
+        "caption": "-"
+    },
+    {
+        "caption": "Local History",
+        "children":
+        [
+            {
+                "caption": "Browse",
+                "command": "history_browse"
+            },
+            {
+                "caption": "Open",
+                "command": "history_open"
+            },
+            {
+                "caption": "Compare",
+                "command": "history_compare"
+            },
+            {
+                "caption": "Replace",
+                "command": "history_replace"
+            },
+            {
+                "caption": "Incremental Diff",
+                "command": "history_incremental_diff"
+            }
+        ]
+    },
+    {
+        "caption": "-"
+    }
+]
