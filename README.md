@@ -42,13 +42,13 @@ A [Sublime Text](https://www.sublimetext.com) package for maintaining a local hi
 
 ## Usage
 
-<img src="./docs/context-menu.png" alt="Context Menu" width="350" height="300">
+<img src="https://raw.githubusercontent.com/vishr/local-history/master/docs/context-menu.png" alt="Context Menu" width="350" height="300">
 
 * Functions are available via:
   * the right-click context menu.
   * the `Local History: ...` commands from the command palette.
 
-<img src="./docs/tools-menu.png" alt="Tools Menu" width="400" height="320">
+<img src="https://raw.githubusercontent.com/vishr/local-history/master/docs/tools-menu.png" alt="Tools Menu" width="400" height="320">
 
 * To permanently delete all history files, choose `Tools > Local History > Delete Local History > Permanently delete all`
 
