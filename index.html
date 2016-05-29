@@ -4,9 +4,9 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
     <title>Local-history by vishr</title>
   </head>
@@ -29,12 +29,12 @@
     <div class="container">
       <section id="main_content">
         <h1>
-<a name="local-history" class="anchor" href="#local-history"><span class="octicon octicon-link"></span></a>Local History</h1>
+<a id="local-history" class="anchor" href="#local-history" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Local History</h1>
 
 <p>A Sublime Text 2/3 plugin for maintaining local history of files</p>
 
 <h2>
-<a name="benefits" class="anchor" href="#benefits"><span class="octicon octicon-link"></span></a>Benefits</h2>
+<a id="benefits" class="anchor" href="#benefits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Benefits</h2>
 
 <ul>
 <li>Every time you modify a file, a copy of the old contents is kept in the local history.</li>
@@ -45,8 +45,10 @@
 <li>Each file revision is stored in a separate file (with full path) inside the <code>.sublime/history</code> folder of your home directory.
 e.g., <code>/Users/vrana/.sublime/history/foo/bar/Oct.14.2012_14.48.47.history.py</code>
 </li>
-</ul><h2>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
 <p><strong>With the Package Control plugin:</strong> The easiest way to install this plugin is through <a href="http://wbond.net/sublime_packages/package_control">Package Control</a></p>
 
@@ -69,23 +71,24 @@ e.g., <code>/Users/vrana/.sublime/history/foo/bar/Oct.14.2012_14.48.47.history.p
 <li>Windows:
 <code>%APPDATA%/Sublime Text 2/Packages/</code>
 </li>
-</ul><h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
 <p><img src="http://i.imgur.com/jNMrT8Q.png" alt="Open | Compare | Incremental Diff"></p>
 
 <p><img src="http://i.imgur.com/nUlx8.png" alt="Delete All"></p>
 
 <h3>
-<a name="settings" class="anchor" href="#settings"><span class="octicon octicon-link"></span></a>Settings</h3>
+<a id="settings" class="anchor" href="#settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Settings</h3>
 
-<div class="highlight highlight-js"><pre><span class="p">{</span>
-      <span class="s2">"file_size_limit"</span><span class="o">:</span> <span class="mi">262144</span><span class="p">,</span> <span class="c1">// 256 KB</span>
-      <span class="s2">"history_retention"</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span> <span class="c1">// in days</span>
-      <span class="s2">"history_on_close"</span><span class="o">:</span> <span class="kc">false</span> <span class="c1">// store history only on close</span>
-      <span class="s2">"history_path"</span><span class="o">:</span> <span class="s2">"&lt;path&gt;"</span> <span class="c1">// path to store history, defaults to &lt;HOME&gt;/.sublime/history</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight highlight-source-js"><pre>{
+      <span class="pl-s"><span class="pl-pds">"</span>file_size_limit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">262144</span>, <span class="pl-c">// 256 KB</span>
+      <span class="pl-s"><span class="pl-pds">"</span>history_retention<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">30</span>, <span class="pl-c">// in days</span>
+      <span class="pl-s"><span class="pl-pds">"</span>history_on_close<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">false</span> <span class="pl-c">// store history only on close</span>
+      <span class="pl-s"><span class="pl-pds">"</span>history_path<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>&lt;path&gt;<span class="pl-pds">"</span></span> <span class="pl-c">// path to store history, defaults to &lt;HOME&gt;/.sublime/history</span>
+}</pre></div>
       </section>
     </div>
 
