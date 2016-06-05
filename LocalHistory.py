@@ -4,6 +4,7 @@ import platform
 import datetime
 import difflib
 import filecmp
+from math import log2
 import shutil
 from threading import Thread
 import subprocess
@@ -12,30 +13,27 @@ import sublime_plugin
 
 PY2 = sys.version_info < (3, 0)
 NO_SELECTION = -1
+settings = None
+
+if sublime.version().startswith('2'):
+    plugin_loaded()
+
+def plugin_loaded():
+    global settings
+
+    settings = sublime.load_settings('LocalHistory.sublime-settings')
+    settings.add_on_change('reload', lambda:sublime.load_settings('LocalHistory.sublime-settings'))
 
 def status_msg(msg):
     sublime.status_message('Local History: ' + msg)
 
-def get_setting(requested_setting):
-    settings = sublime.load_settings('LocalHistory.sublime-settings')
-
-    if requested_setting == 'history_retention':
-        return settings.get('history_retention', 730)
-    elif requested_setting == 'format_timestamp':
-        return settings.get('format_timestamp', '%Y%m%d%H%M%S')
-    elif requested_setting == 'history_on_close':
-        return settings.get('history_on_close', True)
-    elif requested_setting == 'history_on_focus_lost':
-        return settings.get('history_on_focus_lost', False)
-    elif requested_setting == 'history_on_load':
-        return settings.get('history_on_load', True)
-    elif requested_setting == 'portable':
-        return settings.get('portable', True)
-    elif requested_setting == 'file_size_limit':
-        return settings.get('file_size_limit', 4194304)
+def readable_file_size(size):
+    suffixes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'EB', 'ZB']
+    order = int(log2(size) / 10) if size else 0
+    return '{:.4g} {}'.format(size / (1 << (order * 10)), suffixes[order])
 
 def get_history_root():
-    return os.path.join(os.path.dirname(sublime.packages_path()), '.sublime', 'Local History') if get_setting('portable') else os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'Local History')
+    return os.path.join(os.path.dirname(sublime.packages_path()), '.sublime', 'Local History') if settings.get('portable', True) else os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'Local History')
 
 def get_history_subdir(file_path):
     history_root = get_history_root()
@@ -66,14 +64,7 @@ class OpenLocalHistoryDefaultSettingsCommand(sublime_plugin.WindowCommand):
         self.view = None
 
     def run(self):
-        self.view = sublime.active_window().open_file(
-            os.path.join(
-                sublime.installed_packages_path(),
-                'Local History',
-                'settings',
-                'LocalHistory.sublime-settings'
-            )
-        )
+        self.view = sublime.active_window().run_command("open_file", {"file": "${packages}/Local History/settings/LocalHistory.sublime-settings"})
         sublime.set_timeout(self.set_view_readonly, 1)
 
     def set_view_readonly(self):
@@ -85,53 +76,55 @@ class OpenLocalHistoryDefaultSettingsCommand(sublime_plugin.WindowCommand):
 class HistorySave(sublime_plugin.EventListener):
 
     def on_load(self, view):
-        if not PY2:
+        if not PY2 or not settings.get('history_on_load', True):
             return
 
-        if get_setting('history_on_load'):
-            t = Thread(target=self.process_history, args=(view.file_name(),))
-            t.start()
+        t = Thread(target=self.process_history, args=(view.file_name(),))
+        t.start()
 
     def on_load_async(self, view):
-        if get_setting('history_on_load'):
+        if settings.get('history_on_load', True):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def on_close(self, view):
-        if get_setting('history_on_close'):
+        if settings.get('history_on_close', True):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def on_post_save(self, view):
-        if not PY2:
+        if not PY2 or settings.get('history_on_close', True):
             return
 
-        if not get_setting('history_on_close'):
-            t = Thread(target=self.process_history, args=(view.file_name(),))
-            t.start()
+        t = Thread(target=self.process_history, args=(view.file_name(),))
+        t.start()
 
     def on_post_save_async(self, view):
-        if not get_setting('history_on_close'):
+        if not settings.get('history_on_close', True):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def on_deactivated(self, view):
-        if (view.is_dirty() and get_setting('history_on_focus_lost')):
+        if (view.is_dirty() and settings.get('history_on_focus_lost', False)):
             t = Thread(target=self.process_history, args=(view.file_name(),))
             t.start()
 
     def process_history(self, file_path):
         if file_path == None:
-            status_msg('File path does not exist.')
+            status_msg('File not saved, path does not exist.')
             return
 
-        size_limit = get_setting('file_size_limit')
-        history_retention = get_setting('history_retention')
+        if not os.path.isfile(file_path):
+            status_msg('File not saved, might be part of a package.')
+            return
+
+        size_limit = settings.get('file_size_limit', 4194304)
+        history_retention = settings.get('history_retention', 0)
 
         if PY2:
             file_path = file_path.encode('utf-8')
         if os.path.getsize(file_path) > size_limit:
-            status_msg('File not saved, exceeded {0} KB limit.'.format(size_limit / 1024))
+            status_msg('File not saved, exceeded %s limit.' % readable_file_size(size_limit))
             return
 
         file_name = os.path.basename(file_path)
@@ -143,13 +136,13 @@ class HistorySave(sublime_plugin.EventListener):
 
         if history_files:
             if filecmp.cmp(file_path, os.path.join(history_dir, history_files[0])):
-                status_msg('No changes, skipped updating history for "' + file_name + '".')
+                status_msg('File not saved, no changes for "' + file_name + '".')
                 return
 
         file_root, file_extension = os.path.splitext(file_name)
-        shutil.copyfile(file_path, os.path.join(history_dir, '{0}-{1}{2}'.format(file_root, datetime.datetime.now().strftime(get_setting('format_timestamp')), file_extension)))
+        shutil.copyfile(file_path, os.path.join(history_dir, '{0}-{1}{2}'.format(file_root, datetime.datetime.now().strftime(settings.get('format_timestamp', '%Y%m%d%H%M%S')), file_extension)))
 
-        status_msg('Updated Local History for "' + file_name + '".')
+        status_msg('File saved, updated Local History for "' + file_name + '".')
 
         if history_retention == 0:
             return
