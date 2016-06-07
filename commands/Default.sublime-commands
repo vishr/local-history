@@ -4,19 +4,23 @@
         "command": "history_browse"
     },
     {
-        "caption": "Local History: Open",
-        "command": "history_open"
-    },
-    {
         "caption": "Local History: Compare",
         "command": "history_compare"
+    },
+    {
+        "caption": "Local History: Incremental Diff",
+        "command": "history_incremental_diff"
+    },
+    {
+        "caption": "Local History: Open",
+        "command": "history_open"
     },
     {
         "caption": "Local History: Replace",
         "command": "history_replace"
     },
     {
-        "caption": "Local History: Incremental Diff",
-        "command": "history_incremental_diff"
+        "caption": "Local History: Save Now",
+        "command": "history_save_now"
     }
 ]

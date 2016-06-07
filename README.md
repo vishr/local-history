@@ -21,24 +21,46 @@ A [Sublime Text](https://www.sublimetext.com) package for maintaining a local hi
   * the `Local History: ...` commands from the command palette.
 * `Local History` helps you out when you change or delete a file by accident.
 * `Local History` can help you out when your workspace has a catastrophic problem or if you get disk errors that corrupt your workspace files.
-* Each file revision is stored in a separate file (with full path):
-	* inside the `~/.sublime/Local History/` folder of your home directory (`"portable": false`)
-	* inside the `Sublime Text/Data/.sublime/Local History/` folder of your [Sublime Text](https://www.sublimetext.com) installation (`"portable": true`)
+* File revisions are stored in separate files (with full path):
+	* see the [Local History path](#local-history-path) section below
 
 ## Installation
 
 * Via [Package Control](https://www.packagecontrol.io):
   * [Install Package Control](https://www.packagecontrol.io/installation)
-  * Open the command palette (<kbd>Ctrl</kbd><kbd>⇧ Shift</kbd><kbd>P</kbd>)
-  * Choose `Install Package`
+  * Open the command palette (<kbd>Ctrl</kbd><kbd>Shift ⇧</kbd><kbd>P</kbd>)
+  * Choose `Package Control: Install Package`
   * Search for `Local History` and select to install.
 * Clone the repo: `git clone git://github.com/vishr/local-history.git "Local History"` into your [Sublime Text](https://www.sublimetext.com) Packages directory.
   * via HTTPS: `https://github.com/vishr/local-history.git`
   * via SSH: `git@github.com:vishr/local-history.git`
-* Download an archive file below, unpack it and then re-zip the contents of the `Local History` subdirectory. Rename `Local History.zip` to `Local History.sublime-package` and move it to your `Installed Packages` subdirectory of your [Sublime Text](https://www.sublimetext.com) installation:
-  * current snapshot of master
-    * [current snapshot of master as *.zip](https://github.com/vishr/local-history/archive/master.zip)
-    * [current snapshot of master as *.tar.gz](https://github.com/vishr/local-history/archive/master.tar.gz)
+* current snapshot of master
+  * [current snapshot of master as *.zip](https://github.com/vishr/local-history/archive/master.zip)
+    * Download the zip-file, unpack it and then re-zip the contents of the `Local History` subdirectory. Rename `Local History.zip` to `Local History.sublime-package` and move it to your `Installed Packages` subdirectory of your [Sublime Text](https://www.sublimetext.com) installation. On Linux this is `~/.config/sublime-text-2/` or `~/.config/sublime-text-3/`.
+  * [current snapshot of master as *.tar.gz](https://github.com/vishr/local-history/archive/master.tar.gz)
+
+### Settings
+
+#### Default settings
+
+```js
+    "history_retention": 0, // number of days to keep files, 0 to disable deletion
+    "format_timestamp": "%Y%m%d%H%M%S", // file_name-XXXXXXXX.file_extension
+    "history_on_close": true,
+    "history_on_focus_lost": false,
+    "history_on_load": true,
+//  "history_path": "",
+    "portable": true,
+    "file_size_limit": 4194304 // 4 MB
+```
+
+#### Local History path
+
+[Local History](https://github.com/vishr/local-history)'s target directory for file revisions can be set as follows:
+
+* For `"portable": true`, [Local History](https://github.com/vishr/local-history) will save to `Sublime Text/Data/.sublime/Local History/...` wherever [Sublime Text](https://www.sublimetext.com) is installed.
+* Setting `"portable": false` will change the target folder to the `~/.sublime/Local History/...` subfolder of your user directory.
+  * If `"portable": false` changing `"history_path": "..."` will give you the option to change the target directory to a custom path.
 
 ## Usage
 
@@ -51,15 +73,3 @@ A [Sublime Text](https://www.sublimetext.com) package for maintaining a local hi
 <img src="https://raw.githubusercontent.com/vishr/local-history/master/docs/tools-menu.png" alt="Tools Menu" width="400" height="320">
 
 * To permanently delete all history files, choose `Tools > Local History > Delete Local History > Permanently delete all`
-
-### Settings
-
-```js
-    "history_retention": 0, // number of days to keep files, 0 to disable deletion
-    "format_timestamp": "%Y%m%d%H%M%S", // file_name-XXXXXXXX.file_extension
-    "history_on_close": true,
-    "history_on_focus_lost": false,
-    "history_on_load": true,
-    "portable": true, // save to 'Sublime Text/Data/.sublime/Local History/...' instead of '~/.sublime/Local History/...'
-    "file_size_limit": 4194304 // 4 MB
-```

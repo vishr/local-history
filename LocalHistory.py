@@ -23,6 +23,8 @@ def plugin_loaded():
 
     settings = sublime.load_settings('LocalHistory.sublime-settings')
     settings.add_on_change('reload', lambda:sublime.load_settings('LocalHistory.sublime-settings'))
+    
+    status_msg('Target directory: "' + get_history_root() + '"')
 
 def status_msg(msg):
     sublime.status_message('Local History: ' + msg)
@@ -33,7 +35,9 @@ def readable_file_size(size):
     return '{:.4g} {}'.format(size / (1 << (order * 10)), suffixes[order])
 
 def get_history_root():
-    return os.path.join(os.path.dirname(sublime.packages_path()), '.sublime', 'Local History') if settings.get('portable', True) else os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'Local History')
+    path_default_not_portable = os.path.join(os.path.abspath(os.path.expanduser('~')), '.sublime', 'Local History')
+    path_not_portable = settings.get('history_path', path_default_not_portable)
+    return os.path.join(os.path.dirname(sublime.packages_path()), '.sublime', 'Local History') if settings.get('portable', True) else path_not_portable
 
 def get_history_subdir(file_path):
     history_root = get_history_root()
@@ -152,6 +156,12 @@ class HistorySave(sublime_plugin.EventListener):
             file = os.path.join(history_dir, file)
             if datetime.date.fromtimestamp(os.path.getmtime(file)) < max_valid_archive_date:
                 os.remove(file)
+
+class HistorySaveNow(sublime_plugin.TextCommand):
+
+    def run(self, edit):
+        t = Thread(target=HistorySave.process_history, args=(view.file_name(),))
+        t.start()
 
 class HistoryBrowse(sublime_plugin.TextCommand):
 

@@ -4,6 +4,7 @@
     "history_on_close": true,
     "history_on_focus_lost": false,
     "history_on_load": true,
+//  "history_path": "", // redirect '~/.sublime/Local History/...' to some other place if "portable": false
     "portable": true, // save to 'Sublime Text/Data/.sublime/Local History/...' instead of '~/.sublime/Local History/...'
     "file_size_limit": 4194304 // 4 MB
 }
