@@ -22,7 +22,7 @@ def plugin_loaded():
     global settings
 
     settings = sublime.load_settings('LocalHistory.sublime-settings')
-    settings.add_on_change('reload', lambda:sublime.load_settings('LocalHistory.sublime-settings'))
+    settings.add_on_change('reload', sublime.load_settings('LocalHistory.sublime-settings'))
 
     status_msg('Target directory: "' + get_history_root() + '"')
 
