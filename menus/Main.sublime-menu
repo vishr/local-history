@@ -1,36 +1,14 @@
 [
     {
-        "id": "tools",
-        "caption": "Tools",
-        "children":
-        [
-            {
-                "id": "local_history",
-                "caption": "Local History",
-                "children":
-                [
-                    {
-                        "caption": "Delete Local History",
-                        "children":
-                        [
-                            {
-                                "caption": "Permanently delete all",
-                                "command": "history_delete_all"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "id": "preferences",
         "caption": "Preferences",
+        "mnemonic": "n",
+        "id": "preferences",
         "children":
         [
             {
-                "id": "package-settings",
                 "caption": "Package Settings",
+                "mnemonic": "P",
+                "id": "package-settings",
                 "children":
                 [
                     {
@@ -38,29 +16,19 @@
                         "children":
                         [
                             {
-                                "caption": "Settings – Default (read-only)",
-                                "command": "open_local_history_default_settings"
-                            },
-                            {
-                                "caption": "Settings – User",
                                 "command": "open_file",
-                                "args":
-                                {
-                                    "file": "${packages}/User/LocalHistory.sublime-settings"
-                                }
+                                "args": { "file": "${packages}/Local History/settings/LocalHistory.sublime-settings" },
+                                "caption": "Settings – Default"
                             },
                             {
-                                "caption": "-"
+                                "command": "open_file",
+                                "args": { "file": "${packages}/User/LocalHistory.sublime-settings" },
+                                "caption": "Settings – User"
                             },
+                            { "caption": "-" },
                             {
-                                "caption": "Delete Local History",
-                                "children":
-                                [
-                                    {
-                                        "caption": "Permanently delete all",
-                                        "command": "history_delete_all"
-                                    }
-                                ]
+                                "command": "history_delete_all",
+                                "caption": "Permanently delete Local History"
                             }
                         ]
                     }

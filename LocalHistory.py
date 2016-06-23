@@ -62,17 +62,6 @@ def get_history_files(file_name, history_dir):
 
     return history_files
 
-class OpenLocalHistoryDefaultSettingsCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        settings_read_only = sublime.load_resource('Packages/Local History/settings/LocalHistory.sublime-settings')
-        v = sublime.active_window().new_file()
-        v.run_command('append', {'characters': settings_read_only})
-        v.set_name('Local History Settings - Default (read-only)')
-        v.set_syntax_file('Packages/JavaScript/JSON.sublime-syntax')
-        v.set_scratch(True)
-        v.set_read_only(True)
-
 class HistorySave(sublime_plugin.EventListener):
 
     def on_load(self, view):
