@@ -145,20 +145,22 @@ class HistorySave(sublime_plugin.EventListener):
 class HistorySaveNow(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        t = Thread(target=HistorySave.process_history, args=(view.file_name(),))
+        t = Thread(target=HistorySave().process_history, args=(self.view.file_name(),))
         t.start()
 
 class HistoryBrowse(sublime_plugin.TextCommand):
 
     def run(self, edit):
         target_dir = get_history_subdir(self.view.file_name())
+        target_dir = target_dir.replace('\\', os.sep).replace('/', os.sep)
         system = platform.system()
+
         if system == 'Darwin':
-            subprocess.call(['open', target_dir])
+            subprocess.call('open %s' % target_dir)
         elif system == 'Linux':
-            subprocess.call(['xdg-open', target_dir])
+            subprocess.call('xdg-open %s' % target_dir)
         elif system == 'Windows':
-            subprocess.call(['explorer', target_dir])
+            subprocess.call('explorer %s' % target_dir, shell=True)
 
 class HistoryOpen(sublime_plugin.TextCommand):
 

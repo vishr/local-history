@@ -46,7 +46,7 @@ A [Sublime Text](https://www.sublimetext.com) package for maintaining a local hi
 ```js
     "history_retention": 0, // number of days to keep files, 0 to disable deletion
     "format_timestamp": "%Y%m%d%H%M%S", // file_name-XXXXXXXX.file_extension
-    "history_on_close": true,
+    "history_on_close": true, // only save LocalHistory after closing a file, not when original was saved
     "history_on_focus_lost": false,
     "history_on_load": true,
 //  "history_path": "",
