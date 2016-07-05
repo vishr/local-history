@@ -4,7 +4,7 @@ import platform
 import datetime
 import difflib
 import filecmp
-from math import log2
+import math
 import shutil
 from threading import Thread
 import subprocess
@@ -31,7 +31,10 @@ def status_msg(msg):
 
 def readable_file_size(size):
     suffixes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'EB', 'ZB']
-    order = int(log2(size) / 10) if size else 0
+    if PY2:
+        order = int(log(size, 2) / 10) if size else 0
+    else:
+        order = int(log2(size) / 10) if size else 0
     return '{:.4g} {}'.format(size / (1 << (order * 10)), suffixes[order])
 
 def get_history_root():
