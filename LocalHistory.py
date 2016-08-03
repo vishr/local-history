@@ -161,7 +161,7 @@ class HistoryBrowse(sublime_plugin.TextCommand):
         if system == 'Darwin':
             subprocess.call('open %s' % target_dir)
         elif system == 'Linux':
-            subprocess.call('xdg-open %s' % target_dir)
+            subprocess.call('xdg-open %s' % target_dir, shell=True)
         elif system == 'Windows':
             subprocess.call('explorer %s' % target_dir, shell=True)
 
