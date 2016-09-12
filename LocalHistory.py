@@ -20,17 +20,6 @@ else:
 NO_SELECTION = -1
 settings = None
 
-if sublime.version().startswith('2'):
-    plugin_loaded()
-
-def plugin_loaded():
-    global settings
-
-    settings = sublime.load_settings('LocalHistory.sublime-settings')
-    settings.add_on_change('reload', sublime.load_settings('LocalHistory.sublime-settings'))
-
-    status_msg('Target directory: "' + get_history_root() + '"')
-
 def status_msg(msg):
     sublime.status_message('Local History: ' + msg)
 
@@ -69,6 +58,18 @@ def get_history_files(file_name, history_dir):
     history_files.sort(key=lambda f: os.path.getmtime(os.path.join(history_dir, f)), reverse=True)
 
     return history_files
+
+def plugin_loaded():
+    global settings
+
+    settings = sublime.load_settings('LocalHistory.sublime-settings')
+    settings.add_on_change('reload', sublime.load_settings('LocalHistory.sublime-settings'))
+
+    status_msg('Target directory: "' + get_history_root() + '"')
+
+if sublime.version().startswith('2'):
+    plugin_loaded()
+
 
 class HistorySave(sublime_plugin.EventListener):
 
