@@ -1,30 +1,66 @@
 [
-    {
-        "caption": "-"
-    },
+    // {
+    //     "caption": "-", "id":"Local History"
+    // },
     {
         "caption": "Local History",
         "children":
         [
             {
-                "caption": "Browse",
-                "command": "history_browse"
-            },
-            {
                 "caption": "Open",
                 "command": "history_open"
             },
             {
-                "caption": "Compare",
-                "command": "history_compare"
+                "caption": "Snapshots",
+                "children":
+                [
+                    {
+                        "caption": "Open",
+                        "command": "history_open_snapshot"
+                    },
+                    {
+                        "caption": "Create",
+                        "command": "history_create_snapshot"
+                    },
+                    {
+                        "caption": "Diff",
+                        "command": "history_open_snapshot",
+                        "args": {"compare": true}
+                    },
+                    {
+                        "caption": "Diff & Replace with snapshot",
+                        "command": "history_open_snapshot",
+                        "args": {"replace": true}
+                    },
+                    {
+                        "caption": "Compare side-by-side with snapshot",
+                        "command": "history_open_snapshot",
+                        "args": {"sbs": true}
+                    }
+                ]
             },
             {
-                "caption": "Replace",
-                "command": "history_replace"
+                "caption": "Compare with History",
+                "children":
+                [
+                    {
+                        "caption": "Diff",
+                        "command": "history_compare"
+                    },
+                    {
+                        "caption": "Diff & Replace with history",
+                        "command": "history_replace"
+                    },
+                    {
+                        "caption": "Compare side-by-side with history",
+                        "command": "history_compare",
+                        "args": {"sbs": true}
+                    },
+                ]
             },
             {
-                "caption": "Incremental Diff",
-                "command": "history_incremental_diff"
+                "caption": "Browse in Explorer",
+                "command": "history_browse"
             }
         ]
     },

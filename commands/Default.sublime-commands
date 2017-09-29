@@ -1,26 +1,36 @@
 [
     {
-        "caption": "Local History: Browse",
+        "caption": "Local History: Browse in Explorer",
         "command": "history_browse"
     },
     {
-        "caption": "Local History: Compare",
-        "command": "history_compare"
-    },
-    {
-        "caption": "Local History: Incremental Diff",
-        "command": "history_incremental_diff"
+        "caption": "Local History: Compare & Replace",
+        "command": "history_menu",
+        "args": {"compare": true}
     },
     {
         "caption": "Local History: Open",
         "command": "history_open"
     },
     {
-        "caption": "Local History: Replace",
-        "command": "history_replace"
-    },
-    {
         "caption": "Local History: Save Now",
         "command": "history_save_now"
+    },
+    {
+        "caption": "Local History: Snapshots",
+        "command": "history_menu",
+        "args": {"snapshots": true}
+    },
+    {
+        "caption": "Local History: Create Snapshot",
+        "command": "history_create_snapshot"
+    },
+{
+        "caption": "Local History: Menu",
+        "command": "history_menu"
+    },
+    {
+        "caption": "Local History: Delete Options",
+        "command": "history_delete"
     }
 ]

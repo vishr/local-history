@@ -1,10 +1,16 @@
 {
-    "history_retention": 0, // number of days to keep files, 0 to disable deletion
-    "format_timestamp": "%Y%m%d%H%M%S", // file_name-XXXXXXXX.file_extension
-    "history_on_close": true, // only save LocalHistory after closing a file, not when original was saved 
+    "history_retention": 0,            // number of days to keep files, 0 to disable deletion
+    "format_timestamp": "%Y%m%d%H%M%S",// file_name-XXXXXXXX.file_extension
+    "history_on_close": true,          // only save LocalHistory after closing a file, not when original was saved
     "history_on_focus_lost": false,
     "history_on_load": true,
-//  "history_path": "", // redirect '~/.sublime/Local History/...' to some other place if "portable": false
-    "portable": true, // save to 'Sublime Text/Data/.sublime/Local History/...' instead of '~/.sublime/Local History/...'
-    "file_size_limit": 4194304 // 4 MB
+    "portable": true,                  // save to 'Sublime Text/Data/.sublime/Local History/...' instead of '~/.sublime/Local History/...'
+    // "history_path": "", // redirect '~/.sublime/Local History/...' to some other place if "portable": false
+    "file_size_limit": 4194304,         // 4 MB
+
+    "skip_if_saved_within_minutes": 0, // only save if most recent save is older than this (in minutes), 0 to disable
+    "show_full_path": false,
+    "auto_diff": false,                  // automatically opens a diff view when opening a file from history
+    "rename_tab": false,                 // rename the tab to only include the timestamp, or the message in case of snapshots
+    "auto_save_before_diff": true
 }
